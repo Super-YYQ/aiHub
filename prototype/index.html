@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>AI 工作台</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="layouts.css">
+  <script>
+    // 在首屏渲染前确定风格与深浅色，避免闪烁；地址栏可用 ?style=soft&theme=dark 直接指定
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var s = q.get('style') || localStorage.getItem('aikit.style');
+      if (['calm', 'soft', 'glass'].indexOf(s) < 0) s = 'calm';
+      document.documentElement.dataset.style = s;
+      var l = q.get('layout') || localStorage.getItem('aikit.layout');
+      if (['panes', 'gallery', 'launcher', 'board', 'docs'].indexOf(l) < 0) l = 'panes';
+      document.documentElement.dataset.layout = l;
+      var t = q.get('theme') || localStorage.getItem('aikit.theme');
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+      <symbol id="i-stack" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+      <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5.5 5h13L20 13v6H4v-6z"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 5 3 3v2H7v-2l3-3z"/><path d="M12 14v6"/></symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="app">
+    <nav class="rail" aria-label="主导航">
+      <div class="brand">AI 工作台 <small>我的工具与配置</small></div>
+      <div class="nav-group" id="nav-main"></div>
+      <div class="nav-group" id="nav-types"><h2>按类型</h2></div>
+      <div class="nav-group" id="nav-stacks"><h2>我的环境</h2></div>
+      <div class="rail-foot" id="rail-foot"></div>
+    </nav>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-btn btn btn-sm" id="back-btn" type="button" hidden aria-label="返回列表">
+          <svg class="icon"><use href="#i-back"/></svg>
+        </button>
+        <div class="title" id="view-title">工作台</div>
+        <nav class="top-links" aria-label="快捷导航"><a class="brand-link" href="#/">AI 工作台</a><a href="#/stacks">环境</a><a href="#/settings">设置</a></nav>
+        <button class="search-trigger" id="search-btn" type="button" aria-label="搜索（Ctrl+K）">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <span class="label">搜索条目或命令</span>
+          <kbd>Ctrl K</kbd>
+        </button>
+        <button class="btn" id="theme-btn" type="button" aria-label="切换深浅色">
+          <svg class="icon"><use href="#i-moon"/></svg>
+        </button>
+        <a class="btn btn-primary" href="#/new">
+          <svg class="icon"><use href="#i-plus"/></svg><span class="label">新建条目</span>
+        </a>
+      </header>
+      <main class="view" id="view" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <nav class="tabbar" aria-label="底部导航">
+    <a href="#/" data-tab="home"><svg class="icon"><use href="#i-home"/></svg>工作台</a>
+    <a href="#/list/all" data-tab="list"><svg class="icon"><use href="#i-list"/></svg>条目</a>
+    <button type="button" class="add" data-tab="new" id="tab-capture"><svg class="icon"><use href="#i-plus"/></svg>记录</button>
+    <button type="button" data-tab="search" id="tab-search"><svg class="icon"><use href="#i-search"/></svg>搜索</button>
+    <a href="#/stacks" data-tab="stacks"><svg class="icon"><use href="#i-stack"/></svg>环境</a>
+  </nav>
+
+  <div id="palette-root"></div>
+  <div id="sheet-root"></div>
+  <div id="dock-root"></div>
+  <div id="toast-root" role="status" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
