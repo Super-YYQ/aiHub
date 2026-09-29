@@ -1,0 +1,10 @@
+node_modules
+dist
+.wrangler
+pnpm-lock.yaml
+prototype
+docs
+README.md
+coverage
+playwright-report
+test-results

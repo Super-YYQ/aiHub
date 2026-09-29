@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN" data-layout="panes" data-style="calm">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f2f4f3" />
+    <title>AI 工作台</title>
+    <script>
+      // 首屏在渲染前定外观，避免先显示默认再跳变（见 docs/detailed/08-ui-spec.md#切换与保存）
+      (function () {
+        try {
+          var q = new URLSearchParams(location.search);
+          var el = document.documentElement;
+          var layout = q.get('layout') || localStorage.getItem('aikit.layout') || 'panes';
+          var style = q.get('style') || localStorage.getItem('aikit.style') || 'calm';
+          var theme = q.get('theme') || localStorage.getItem('aikit.theme') || 'system';
+          var dark =
+            theme === 'dark' ||
+            (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+          el.dataset.layout = layout;
+          el.dataset.style = style;
+          el.dataset.theme = dark ? 'dark' : 'light';
+        } catch (e) {
+          /* localStorage 不可用时用默认外观 */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

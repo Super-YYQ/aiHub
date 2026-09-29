@@ -1,0 +1,18 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+  - 'tools/*'
+
+allowBuilds:
+  esbuild: set this to true or false
+  sharp: set this to true or false
+  vue-demi: set this to true or false
+  workerd: set this to true or false
+
+# 允许运行安装期构建脚本的依赖（pnpm 10 键名 onlyBuiltDependencies）。
+# esbuild/workerd 是 Vite 与 Wrangler/pool-workers 运行所需；sharp/vue-demi 一并允许，避免告警。
+onlyBuiltDependencies:
+  - esbuild
+  - workerd
+  - sharp
+  - vue-demi

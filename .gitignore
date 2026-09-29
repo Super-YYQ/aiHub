@@ -1,0 +1,27 @@
+# deps / build
+node_modules/
+dist/
+.wrangler/
+*.tsbuildinfo
+
+# env / secrets (never commit)
+.dev.vars
+.env
+.env.*
+*.age
+
+# test / coverage
+coverage/
+playwright-report/
+test-results/
+.vitest/
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# local D1 / wrangler state
+apps/worker/.wrangler/
