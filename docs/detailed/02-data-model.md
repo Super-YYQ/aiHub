@@ -13,9 +13,7 @@
 | 环境成员 StackEntry | `stack_entries` | 条目属于哪些环境，附带“本环境下的备注” |
 | 修订 Revision | `revisions` | 条目每次修改前的完整快照 |
 | 变更日志 ChangeLog | `change_log` | 递增序号，驱动增量同步 |
-| 提案 Proposal | `proposals` | AI 或扫描器提出、等待用户确认的改动 |
-| 来源 EntrySource | `entry_sources` | 条目与某环境里某个本机配置项的对应关系 |
-| 扫描记录 ScanRun | `scan_runs` | 每次扫描器上传的结果摘要 |
+| 提案 Proposal | `proposals` | AI 代理提出、等待用户确认的改动 |
 | 设置 | `settings` | 键值设置，目前只有整理规则 `rules` |
 | 幂等记录 | `idempotency` | 快速记录等接口的重复请求去重 |
 
@@ -65,13 +63,11 @@
 
 `settings` 是键值表。目前只有一个键：`rules`，即整理规则的 Markdown（最多 20,000 字符），默认内容见 [07](07-mcp-scanner.md#整理规则)。写入同样经过密钥扫描，并追加 `change_log`（`entity` 记为 `setting`）。
 
-## 提案、来源与扫描
+## 提案
 
 | 实体 | 字段 |
 | --- | --- |
-| 提案 | `id`（ULID）、`source`（`agent` 或 `scanner`）、`actor`（调用者名称）、`kind`（`create`、`update`、`archive`、`merge`）、`targetEntryId`（新建时为空）、`baseVersion`（针对的条目版本）、`payload`（新建或修改后的完整条目草稿；`merge` 时含被合并的条目 ID 列表）、`reason`（0–1,000 字符，说明依据）、`status`（`pending`、`accepted`、`rejected`、`superseded`）、`scanRunId`、`createdAt`、`decidedAt`、`decidedBy` |
-| 来源 | `entryId`、`stackId`、`sourceKey`（格式见 [07](07-mcp-scanner.md#来源键)）、`fingerprint`（脱敏后配置的 SHA-256）、`lastSeenAt`；主键 `(stackId, sourceKey)` |
-| 扫描记录 | `id`、`stackId`、`scanner`（扫描器版本）、`itemCount`、`summary`（新增、变更、缺失的数量）、`createdAt` |
+| 提案 | `id`（ULID）、`source`（提案来源，目前只有 `agent`）、`actor`（调用者名称）、`kind`（`create`、`update`、`archive`、`merge`）、`targetEntryId`（新建时为空）、`baseVersion`（针对的条目版本）、`payload`（新建或修改后的完整条目草稿；`merge` 时含被合并的条目 ID 列表）、`reason`（0–1,000 字符，说明依据）、`status`（`pending`、`accepted`、`rejected`、`superseded`）、`createdAt`、`decidedAt`、`decidedBy` |
 
 目标条目的 `version` 与提案的 `baseVersion` 不一致时，提案不能直接接受，界面要先展示差异，状态改为 `superseded` 或由用户基于最新版本重新确认。
 
@@ -145,21 +141,9 @@ CREATE TABLE proposals (
   id TEXT PRIMARY KEY, source TEXT NOT NULL, actor TEXT NOT NULL, kind TEXT NOT NULL,
   target_entry_id TEXT, base_version INTEGER, payload TEXT NOT NULL,
   reason TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'pending',
-  scan_run_id TEXT, created_at TEXT NOT NULL, decided_at TEXT, decided_by TEXT
+  created_at TEXT NOT NULL, decided_at TEXT, decided_by TEXT
 );
 CREATE INDEX idx_proposals_status ON proposals (status, created_at);
-
-CREATE TABLE entry_sources (
-  stack_id TEXT NOT NULL, source_key TEXT NOT NULL, entry_id TEXT NOT NULL,
-  fingerprint TEXT NOT NULL, last_seen_at TEXT NOT NULL,
-  PRIMARY KEY (stack_id, source_key)
-);
-CREATE INDEX idx_entry_sources_entry ON entry_sources (entry_id);
-
-CREATE TABLE scan_runs (
-  id TEXT PRIMARY KEY, stack_id TEXT NOT NULL, scanner TEXT NOT NULL,
-  item_count INTEGER NOT NULL, summary TEXT NOT NULL, created_at TEXT NOT NULL
-);
 
 CREATE TABLE settings (
   key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL
@@ -184,7 +168,7 @@ CREATE TABLE idempotency (
 4. 写入实体，`version + 1`，`updated_at` 取服务端当前时间。
 5. 追加一行 `change_log`。
 
-删除是软删除：条目写 `deleted_at`，并删除它的 `stack_entries` 和 `entry_sources`。已删除条目的 `slug` 可以被新条目使用。
+删除是软删除：条目写 `deleted_at`，并删除它的 `stack_entries`。已删除条目的 `slug` 可以被新条目使用。
 
 ## 导出格式
 
@@ -203,14 +187,14 @@ CREATE TABLE idempotency (
 ```
 
 - `entries` 不含已删除条目，每条带 `stacks: [{ "id": "...", "note": "" }]`。
-- 修订、提案、扫描记录、来源不导出；恢复后历史从零开始。
+- 修订、提案不导出；恢复后历史从零开始。
 - `schemaVersion` 只在导出结构不兼容时加 1；导入时按版本号转换旧格式。
 
 ## 导入
 
 | 模式 | 行为 |
 | --- | --- |
-| `replace` | 清空条目、环境、成员关系、来源后按文件重建；字典按 ID 覆盖 |
+| `replace` | 清空条目、环境、成员关系后按文件重建；字典按 ID 覆盖 |
 | `merge` | 按 `id` 更新或新建；与已有条目的 `(type, slug)` 冲突时，新条目的 `slug` 加 `-2`、`-3` 后缀 |
 | `prototype` | 读取原型导出的 JSON（`{ stacks, entries }`），先转换再按 `merge` 导入 |
 

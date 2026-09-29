@@ -13,7 +13,7 @@
 | 5. 填配置 | `ACCESS_TEAM_DOMAIN`、`ACCESS_AUD`、`ALLOWED_EMAILS`、`SERVICE_TOKEN_ROLES` | 配置项全部非空 |
 | 6. 发布 | GitHub 配好 `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`，推送 main 触发 `deploy.yml` | 流水线成功 |
 | 7. 冒烟 | 见下方检查 | 全部符合预期 |
-| 8. 导入 | 设置页导入原型数据（`prototype` 模式），或运行扫描器 | 工作台显示条目 |
+| 8. 导入 | 设置页导入原型数据（`prototype` 模式），或按数据收集规则说明让 AI 收集后经提案写入 | 工作台显示条目 |
 
 冒烟检查：
 
@@ -107,6 +107,6 @@ jobs:
 
 适合的用途：
 
-- 作为档案里的一个环境：如果在上面用 Claude Code 或 Codex，就在上面运行扫描器，把它的配置纳入档案。
+- 作为档案里的一个环境：如果在上面用 Claude Code 或 Codex，就让 AI 按数据收集规则说明把它的配置纳入档案。
 - 方案 B 的冷备：代码用 Hono + Drizzle，可以改用 Node + SQLite 运行；需要时用 Docker 部署，并通过 cloudflared 隧道接入，不对公网开放端口。
 - 需要常驻机器的定时任务（如每周检查插件更新），属于可选增强。

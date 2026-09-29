@@ -27,7 +27,6 @@ ai-kit/
 ├─ packages/
 │  └─ shared/              Zod schema 与类型、Markdown 序列化、密钥扫描、搜索、变量替换
 ├─ tools/
-│  ├─ scanner/             本机配置扫描 CLI
 │  └─ backup/              备份转换：导出 JSON → Markdown 目录
 ├─ prototype/              现有原型，只作参考
 ├─ docs/
@@ -41,7 +40,6 @@ ai-kit/
 ```
 web ──┐
 worker ├──> shared（不依赖任何应用）
-scanner┤
 backup ┘
 worker: routes -> services -> db
 web:    pages -> components -> stores -> api 客户端 / Dexie

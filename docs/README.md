@@ -11,7 +11,7 @@
 | [detailed/04-frontend.md](detailed/04-frontend.md) | 路由、页面规格、组件、状态与离线同步、搜索、快捷键、PWA | 写前端 |
 | [detailed/05-security.md](detailed/05-security.md) | Access、JWT 校验、角色、密钥扫描、内容安全 | 碰到鉴权、密钥、渲染用户内容 |
 | [detailed/06-ops.md](detailed/06-ops.md) | 部署手册、备份与恢复、监控、额度、Oracle 用法 | 部署、备份、排查线上问题 |
-| [detailed/07-mcp-scanner.md](detailed/07-mcp-scanner.md) | MCP 工具定义、提案机制、整理规则、本机扫描器 | 做 AI 接入或扫描器 |
+| [detailed/07-mcp-scanner.md](detailed/07-mcp-scanner.md) | MCP 工具定义、提案机制、整理规则、数据收集规则说明 | 做 AI 接入或数据收集规则 |
 | [detailed/08-ui-spec.md](detailed/08-ui-spec.md) | 五种界面结构、三套配色、组件视觉、动效、手机交互 | 做界面样式或动效 |
 | [detailed/09-tasks.md](detailed/09-tasks.md) | 开发任务拆分、依赖、验收标准 | 领取开发任务 |
 
@@ -29,9 +29,7 @@
 | 变量 | variable | 片段里的 `{{名称}}`，复制前填写 |
 | 环境 | stack | 一台机器或一个使用场景用到的条目集合，用户可自定义 |
 | 待整理 | inbox | 状态之一：先记下、还没补全的条目 |
-| 提案 | proposal | AI 或扫描器提出的新增或修改，用户确认后才写入档案 |
-| 来源 | source | 条目与本机某个配置项的对应关系，由扫描器维护 |
-| 漂移 | drift | 档案记录与机器实际配置不一致：新增、缺失或变更 |
+| 提案 | proposal | AI 代理提出的新增或修改，用户确认后才写入档案 |
 | 脱敏 | redaction | 把密钥等敏感值替换成占位符，只保留变量名 |
 
 ## 已确认的决定（2026-09-29）
@@ -42,6 +40,7 @@
 | Oracle 服务器 | Always Free 实例，不放在主链路上，用法见 [06-ops](detailed/06-ops.md#oracle-服务器) |
 | 域名 | 部署时再定子域名；代码里只通过配置项引用，不写死 |
 | 公开分享 | 不做 |
+| 数据收集 | 不内置扫描器；提供数据收集规则说明，交给 AI 工具按规则在本机收集、脱敏后经提案写入，后续再评估是否内置，见 [07-mcp-scanner](detailed/07-mcp-scanner.md#数据收集规则说明) |
 | 环境 | 用户可新建、编辑、删除，并能批量加入或移出条目 |
 | 界面结构 | 五种全部实现（1 三栏、2 卡片墙、3 搜索优先、4 看板、5 知识库），用户随时切换，按设备保存；默认 1 三栏，见 [08-ui-spec](detailed/08-ui-spec.md#界面结构) |
 | 配色 | 三套全部实现（A 柔和、B 沉静、C 夜航），随时切换，按设备保存；默认 B 沉静，深浅色跟随系统，见 [08-ui-spec](detailed/08-ui-spec.md#配色方案) |

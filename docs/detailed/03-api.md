@@ -35,7 +35,7 @@
 
 ## 角色
 
-`owner` 是本人（浏览器登录）；`agent`、`capture`、`backup`、`scanner` 是服务令牌，映射方式见 [05-security](05-security.md#角色与权限)。
+`owner` 是本人（浏览器登录）；`agent`、`capture`、`backup` 是服务令牌，映射方式见 [05-security](05-security.md#角色与权限)。
 
 ## 条目
 
@@ -62,10 +62,10 @@
 
 | 方法与路径 | 角色 | 说明 |
 | --- | --- | --- |
-| `GET /api/stacks` | owner、agent、scanner | 全部环境，附 `entryCount` |
+| `GET /api/stacks` | owner、agent | 全部环境，附 `entryCount` |
 | `POST /api/stacks` | owner | 新建 |
 | `PUT /api/stacks/:id` | owner | 修改名称、类型、系统、说明、排序，需 `If-Match` |
-| `DELETE /api/stacks/:id` | owner | 删除环境，只解除成员关系和来源，不删除条目，需 `If-Match` |
+| `DELETE /api/stacks/:id` | owner | 删除环境，只解除成员关系，不删除条目，需 `If-Match` |
 | `PUT /api/stacks/:id/entries` | owner | 批量调整成员：`{ "add": [{ "entryId": "...", "note": "" }], "remove": ["entryId"] }` |
 | `PATCH /api/stacks/:id/entries/:entryId` | owner | 修改本环境下的备注 `{ "note": "..." }` |
 | `GET /api/stacks/:id/checklist` | owner、agent | 安装清单，`text/markdown`；内容是按类型分组的待勾选条目，附各条目标记为“安装命令”的片段 |
@@ -105,19 +105,12 @@
 | 方法与路径 | 角色 | 说明 |
 | --- | --- | --- |
 | `GET /api/proposals?status=pending` | owner | 列表 |
-| `POST /api/proposals` | agent、scanner | 提交提案，`payload` 按条目 schema 校验并做密钥扫描 |
+| `POST /api/proposals` | agent | 提交提案，`payload` 按条目 schema 校验并做密钥扫描 |
 | `POST /api/proposals/:id/accept` | owner | 可带 `{ "payload": {...} }` 表示用户改过的版本；按正常写入规则落库，修订的 `actor` 记为 `owner (proposal <id>)` |
 | `POST /api/proposals/:id/reject` | owner | 可带 `{ "reason": "..." }` |
 | `POST /api/proposals/bulk` | owner | `{ "ids": [], "action": "accept" \| "reject" }`，逐条返回结果，一条失败不影响其他 |
 
 接受时如果目标条目的版本已经不是 `baseVersion`，返回 `version_conflict`，由界面展示差异后让用户决定。
-
-## 扫描
-
-| 方法与路径 | 角色 | 说明 |
-| --- | --- | --- |
-| `POST /api/scan-runs` | scanner | `{ "stackId": "...", "scanner": "0.1.0", "items": [ScanItem] }`；服务端计算漂移并生成提案，返回 `{ scanRun, summary, proposalIds }`，规则见 [07](07-mcp-scanner.md#漂移与提案) |
-| `GET /api/scan-runs?stackId=` | owner | 扫描历史 |
 
 ## 导出、导入与其他
 
