@@ -4,29 +4,29 @@
 
 ## 当前
 
-- 🟡 WP14 提案：后端与待确认页
+- 🟡 WP15 MCP 端点与数据收集规则
 
 ## 明细
 
-| WP      | 状态 | 说明                                                                                 |
-| ------- | ---- | ------------------------------------------------------------------------------------ |
-| WP0     | ✅   | workspace/lint/typecheck/test/build 全绿；wrangler dev /api/health→{ok:true,db:true} |
-| WP1     | ✅   | shared 全量：schema(105 测试)/密钥扫描/搜索/变量/capture/markdown/清单/原型转换 全绿 |
-| WP2     | ✅   | 迁移+种子(21/3)+Drizzle 表+迁移测试 6/6；本地库实测 slug 唯一/重用/外键              |
-| WP3     | 🟡   | JWT 校验/角色/权限/本地开发身份                                                      |
-| WP4     | ✅   | 全部接口实现+验收 15 测试：batch 行数/409/428/422/环境删除保留条目/修订恢复          |
-| WP5     | 🟡   | /api/sync、/api/capture（幂等）、/api/export、/api/import 三模式                     |
-| WP6     | 🟡   | Vue 骨架、Dexie、同步引擎（outbox/退避/锁/广播）                                     |
-| WP7     | 🟡   | 三栏工作台/条目页、共用编辑/环境/设置、命令面板、冲突对话框、三套配色令牌            |
-| WP7A-D  | 🟡   | 卡片墙/搜索优先/看板/知识库                                                          |
-| WP8     | 🟡   | manifest、Service Worker、新版本提示、主题色跟随                                     |
-| WP9     | 🟡   | deploy.yml 可自动做；建库/域名/Access/Secrets 见 PENDING-MANUAL                      |
-| WP10    | ✅   | check-export/to-markdown + backup.yml；5 测试全绿；凭据/实跑见 PENDING-MANUAL        |
-| WP11    | ✅   | 抽屉列出修订、选中对比（字段+笔记逐行）、恢复生成新版本且旧版本保留；E2E 全过        |
-| WP12    | ✅   | 类型/平台/标签管理已在 WP7 一并实现                                                  |
-| WP13    | ✅   | manifest share_target+分享参数预填面板（E2E 双视口）+ iOS 快捷指令文档               |
-| WP14    | 🟡   | 四种提案创建/接受/拒绝、过期冲突、批量                                                |
-| WP15    | ⬜   | MCP 端点 + 数据收集规则                                                               |
+| WP     | 状态 | 说明                                                                                 |
+| ------ | ---- | ------------------------------------------------------------------------------------ |
+| WP0    | ✅   | workspace/lint/typecheck/test/build 全绿；wrangler dev /api/health→{ok:true,db:true} |
+| WP1    | ✅   | shared 全量：schema(105 测试)/密钥扫描/搜索/变量/capture/markdown/清单/原型转换 全绿 |
+| WP2    | ✅   | 迁移+种子(21/3)+Drizzle 表+迁移测试 6/6；本地库实测 slug 唯一/重用/外键              |
+| WP3    | 🟡   | JWT 校验/角色/权限/本地开发身份                                                      |
+| WP4    | ✅   | 全部接口实现+验收 15 测试：batch 行数/409/428/422/环境删除保留条目/修订恢复          |
+| WP5    | 🟡   | /api/sync、/api/capture（幂等）、/api/export、/api/import 三模式                     |
+| WP6    | 🟡   | Vue 骨架、Dexie、同步引擎（outbox/退避/锁/广播）                                     |
+| WP7    | 🟡   | 三栏工作台/条目页、共用编辑/环境/设置、命令面板、冲突对话框、三套配色令牌            |
+| WP7A-D | 🟡   | 卡片墙/搜索优先/看板/知识库                                                          |
+| WP8    | 🟡   | manifest、Service Worker、新版本提示、主题色跟随                                     |
+| WP9    | 🟡   | deploy.yml 可自动做；建库/域名/Access/Secrets 见 PENDING-MANUAL                      |
+| WP10   | ✅   | check-export/to-markdown + backup.yml；5 测试全绿；凭据/实跑见 PENDING-MANUAL        |
+| WP11   | ✅   | 抽屉列出修订、选中对比（字段+笔记逐行）、恢复生成新版本且旧版本保留；E2E 全过        |
+| WP12   | ✅   | 类型/平台/标签管理已在 WP7 一并实现                                                  |
+| WP13   | ✅   | manifest share_target+分享参数预填面板（E2E 双视口）+ iOS 快捷指令文档               |
+| WP14   | 🟡   | 四种提案创建/接受/拒绝、过期冲突、批量                                               |
+| WP15   | ⬜   | MCP 端点 + 数据收集规则                                                              |
 
 ## 验证记录
 
@@ -53,3 +53,6 @@
 - WP11: E2E ✅（修改三次→3 旧版本；v1 对比当前含说明/笔记逐行差异；恢复 v3 生成 v5，旧版本仍在，详情显示恢复后内容）
 - WP12: 类型/平台/标签管理页验收 E2E ✅（新建类型→条目出现、删除被引用类型提示原因、标签合并、规则保存回读）；关键修复：管理页直接写库后 syncSoon（等在途同步再拉）、删除的 res.ok 检查（409 原因现在能显示）
 - WP13: share_target 预填 E2E 双视口 ✅；分享判定改为 url/text（不再被编辑页 ?title= 预填误触发）；iOS 快捷指令配置文档 docs/shortcuts.md
+- WP14: worker 49/49（提案 9 个新测试：四 kind 全走通、update 修订 actor=owner (proposal <id>)、过期 409 details.current、批量 49 成功 1 条带原因、owner 提案 403、密钥 422 不回显）✅
+- WP14 前端：待确认页按 actor 分组、接受/修改后接受（编辑页载入草稿，保存即接受）/拒绝/多选批量；E2E 3/3（X-Dev-Auth 模拟 agent，仅 development 生效）
+- 关键修复：同步始终带 pending 提案（不受分页窗口限制）、本地清已决策提案、分享参数清理不再误删 ?proposal=/?title=

@@ -72,6 +72,7 @@ export async function sync(db: D1Database, since: number, limit: number): Promis
 
   // 组装当前状态
   const { rowToEntry, rowToStack, rowToType, rowToPlatform } = await import('../db/mappers');
+  const { rowToProposal } = await import('./proposals');
   const { loadStackRefs } = await import('../db/helpers');
 
   if (ids.entry.size) {
@@ -127,14 +128,14 @@ export async function sync(db: D1Database, since: number, limit: number): Promis
     empty.platforms = rows.map((r) => rowToPlatform(r));
   }
 
-  // 待确认数量用 pending 提案（列表只在有变更涉及提案时返回；03-api：proposals 只含 pending）
-  if ([...latest.values()].some((v) => v.entity === 'proposal')) {
+  // 03-api：proposals 只含 pending——待确认数量每次同步都要最新，不受分页窗口限制
+  {
     const { results: rows } = await db
       .prepare(
         `SELECT * FROM proposals WHERE status = 'pending' ORDER BY created_at DESC LIMIT 500`,
       )
-      .all();
-    empty.proposals = rows;
+      .all<Parameters<typeof rowToProposal>[0]>();
+    empty.proposals = rows.map((r) => rowToProposal(r));
   }
 
   return { ...empty, deleted, cursor, hasMore };

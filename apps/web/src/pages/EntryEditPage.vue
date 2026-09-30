@@ -44,6 +44,52 @@ const links = ref('');
 const fieldErrors = ref<Record<string, string>>({});
 
 onMounted(() => {
+  // “修改后接受”进入：带上提案草稿（待确认页存进 sessionStorage）
+  const proposalParam = new URLSearchParams(location.search).get('proposal');
+  if (proposalParam) {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('aikit.proposalDraft') ?? 'null') as {
+        proposalId: string;
+        targetEntryId: string | null;
+        draft: Record<string, unknown>;
+      } | null;
+      if (saved && saved.proposalId === proposalParam) {
+        const d = saved.draft;
+        form.type = (d.type as string) ?? form.type;
+        form.title = (d.title as string) ?? '';
+        form.slug = (d.slug as string) ?? '';
+        form.summary = (d.summary as string) ?? '';
+        form.status = (d.status as string) ?? form.status;
+        form.tags = ((d.tags as string[]) ?? []).join(', ');
+        form.fields = Object.entries((d.fields as Record<string, string>) ?? {})
+          .map(([k, v]) => `${k}: ${v}`)
+          .join('\n');
+        form.body = (d.body as string) ?? '';
+        snippets.push(
+          ...(
+            (d.snippets as Array<{
+              label?: string;
+              lang?: string;
+              code: string;
+              install?: boolean;
+            }>) ?? []
+          ).map((sn) => ({
+            label: sn.label ?? '',
+            lang: sn.lang ?? 'text',
+            code: sn.code,
+            install: Boolean(sn.install),
+          })),
+        );
+        links.value = ((d.links as Array<{ label?: string; url: string }>) ?? [])
+          .map((l) => `${l.label ?? ''} | ${l.url}`)
+          .join('\n');
+        ui.showToast('已载入提案草稿，保存时会在提交后接受提案');
+        return;
+      }
+    } catch {
+      /* 草稿损坏则按普通编辑处理 */
+    }
+  }
   if (editing.value) {
     const e = editing.value;
     form.type = e.type;
@@ -75,6 +121,24 @@ onMounted(() => {
   window.addEventListener('keydown', onKeyDown);
 });
 onBeforeUnmount(() => window.removeEventListener('keydown', onKeyDown));
+
+/** “修改后接受”流：带 ?proposal= 进入时，保存后用新内容接受该提案。 */
+async function acceptProposalIfAny(): Promise<void> {
+  const proposalId = new URLSearchParams(location.search).get('proposal');
+  if (!proposalId) return;
+  try {
+    const res = await fetch(`/api/proposals/${proposalId}/accept`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ payload: buildDraft() }),
+    });
+    if (res.ok) ui.showToast('提案已接受');
+    else ui.showToast('提案接受失败，可到待确认页重试');
+    sessionStorage.removeItem('aikit.proposalDraft');
+  } catch {
+    ui.showToast('提案接受失败，可到待确认页重试');
+  }
+}
 
 function onKeyDown(ev: KeyboardEvent) {
   if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 's') {
@@ -168,9 +232,21 @@ async function save() {
       await entries.update(editing.value.id, draft);
       // 同步环境成员
       await syncStackMembership(editing.value.id, form.stacks);
+      await acceptProposalIfAny();
       ui.showToast('已保存修改');
       router.push(`/list/all/${editing.value.id}`);
     } else {
+      // “修改后接受”创建提案：条目由提案接受落库（03-api：accept 可带用户改过的 payload），
+      // 编辑器不再本地重复建一条。
+      const proposalId = new URLSearchParams(location.search).get('proposal');
+      if (proposalId) {
+        await acceptProposalIfAny();
+        const { syncSoon } = await import('../lib/sync');
+        await syncSoon();
+        ui.showToast('已按修改后的内容接受提案');
+        router.push('/list/all');
+        return;
+      }
       const created = await entries.create(draft);
       await syncStackMembership(created.id, form.stacks);
       ui.showToast('已新建条目');

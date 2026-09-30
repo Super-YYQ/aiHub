@@ -98,6 +98,12 @@ async function applyPage(page: SyncPage): Promise<void> {
       for (const t of page.types) await db.types.put(t as never);
       for (const p of page.platforms) await db.platforms.put(p as never);
       for (const pr of page.proposals) await db.proposals.put(pr as never);
+      // 同步只返回 pending：已决策的提案本地清掉（待确认页只看 pending）
+      const syncedIds = new Set(page.proposals.map((p) => p.id));
+      const localProposals = await db.proposals.toArray();
+      for (const lp of localProposals) {
+        if (!syncedIds.has(lp.id)) await db.proposals.delete(lp.id);
+      }
 
       // 同步里已删除的提案不再出现在 pending 列表 → 本地清掉已决策的
       if (page.proposals.length === 0) {

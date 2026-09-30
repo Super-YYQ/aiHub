@@ -60,10 +60,14 @@ if (shareParams.has('url') || shareParams.has('text')) {
 
 app.mount('#app');
 
-// 预填后清掉地址栏参数，避免刷新再次弹出（放在挂载后执行，防止路由初始化把参数写回去）
-if (shareParams.size > 0) {
+// 预填后清掉地址栏参数，避免刷新再次弹出（只在真的是分享进入时；?proposal=、?title= 等其他参数不动）
+if (shareParams.has('url') || shareParams.has('text')) {
   router.isReady().then(() => {
-    history.replaceState(history.state, '', location.pathname);
+    const cleaned = new URL(location.href);
+    cleaned.searchParams.delete('url');
+    cleaned.searchParams.delete('text');
+    cleaned.searchParams.delete('title');
+    history.replaceState(history.state, '', cleaned.pathname + cleaned.search);
   });
 }
 

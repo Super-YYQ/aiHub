@@ -65,11 +65,21 @@ export function authMiddleware(): MiddlewareHandler<{
     const env = c.env;
 
     if (devBypassEnabled(env)) {
+      // 本地开发身份：DEV_AUTH_EMAIL 支持 "email:role"（如 agent@x:agent），
+      // 请求头 X-Dev-Auth（email:role）可按请求覆盖，便于本地/E2E 模拟不同角色；
+      // 生产环境没有这条路径（devBypassEnabled 只在 development 为真）。
+      const devAuth = c.req.header('X-Dev-Auth') ?? env.DEV_AUTH_EMAIL!;
+      const [email, role = 'owner'] = devAuth.split(':');
+      const allowedRole = (['owner', 'agent', 'capture', 'backup'] as const).includes(
+        role as 'owner',
+      )
+        ? (role as 'owner')
+        : 'owner';
       c.set('identity', {
         kind: 'human',
-        email: env.DEV_AUTH_EMAIL!,
-        role: 'owner',
-        actor: env.DEV_AUTH_EMAIL!,
+        email,
+        role: allowedRole,
+        actor: email,
       });
       await next();
       return;

@@ -14,6 +14,7 @@ import * as entries from './services/entries';
 import * as stacks from './services/stacks';
 import * as dicts from './services/dictionaries';
 import * as settings from './services/settings';
+import * as proposals from './services/proposals';
 import * as syncService from './services/sync';
 import * as captureService from './services/capture';
 import * as importExport from './services/import-export';
@@ -324,19 +325,46 @@ export function createApp() {
     },
   );
 
-  // ---------- 提案（WP14 实现）----------
-  for (const [method, route] of [
-    ['get', '/api/proposals'],
-    ['post', '/api/proposals'],
-    ['post', '/api/proposals/:id/accept'],
-    ['post', '/api/proposals/:id/reject'],
-    ['post', '/api/proposals/bulk'],
-  ] as const) {
-    const key = `${method.toUpperCase()} ${route}`;
-    app.on(method, route, guardRoute(key), (c) =>
-      c.json({ error: { code: 'not_implemented', message: '这个接口还没有实现' } }, 501),
+  // ---------- 提案（03-api#提案）----------
+  app.get('/api/proposals', guardRoute('GET /api/proposals'), async (c) => {
+    const status = c.req.query('status') ?? undefined;
+    return c.json(await proposals.listProposals(c.env.DB, status));
+  });
+
+  app.post('/api/proposals', guardRoute('POST /api/proposals'), async (c) => {
+    const identity = c.get('identity');
+    const result = await proposals.createProposal(c.env.DB, await readJson(c), identity.actor);
+    return c.json(result, 201);
+  });
+
+  app.post('/api/proposals/:id/accept', guardRoute('POST /api/proposals/:id/accept'), async (c) => {
+    const body = await readJson<{ payload?: unknown }>(c).catch(() => ({ payload: undefined }));
+    const identity = c.get('identity');
+    const result = await proposals.acceptProposal(
+      c.env.DB,
+      c.req.param('id'),
+      identity.actor,
+      body?.payload,
     );
-  }
+    return c.json(result);
+  });
+
+  app.post('/api/proposals/:id/reject', guardRoute('POST /api/proposals/:id/reject'), async (c) => {
+    const body = await readJson<{ reason?: string }>(c).catch(() => ({ reason: undefined }));
+    const identity = c.get('identity');
+    await proposals.rejectProposal(c.env.DB, c.req.param('id'), body?.reason, identity.actor);
+    return c.json({ ok: true });
+  });
+
+  app.post('/api/proposals/bulk', guardRoute('POST /api/proposals/bulk'), async (c) => {
+    const body = await readJson<{ ids?: string[]; action?: string }>(c);
+    if (!Array.isArray(body.ids) || !body.ids.length)
+      throw new AppError('bad_request', 400, 'ids 需要是非空数组。');
+    if (body.action !== 'accept' && body.action !== 'reject')
+      throw new AppError('bad_request', 400, 'action 需要是 accept 或 reject。');
+    const identity = c.get('identity');
+    return c.json(await proposals.bulkProposals(c.env.DB, body.ids, body.action, identity.actor));
+  });
 
   // 未匹配路径：/api 与 /mcp 返回 JSON 404；其余交给静态资源（兜底，正常由 Assets 处理）
   app.notFound((c) => {
