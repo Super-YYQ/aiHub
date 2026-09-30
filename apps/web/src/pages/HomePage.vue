@@ -1,13 +1,21 @@
 <script setup lang="ts">
 // 工作台（04-frontend#页面规格）：快速记录、置顶、最近更新、在用构成、待整理、待确认、试用中与想试。
-import { computed, ref } from 'vue';
+// 结构 5 知识库的工作台是文档式首页，由 DocsBrowse 的“首页”形态渲染。
+import { computed, ref, defineAsyncComponent } from 'vue';
 import { useEntriesStore, useDictionariesStore } from '../stores/data';
 import { useUiStore } from '../stores/ui';
 import EntryRow from '../components/EntryRow.vue';
 
+const DocsBrowse = defineAsyncComponent(() => import('../components/browse/DocsBrowse.vue'));
+const GalleryBrowse = defineAsyncComponent(() => import('../components/browse/GalleryBrowse.vue'));
+const LauncherBrowse = defineAsyncComponent(
+  () => import('../components/browse/LauncherBrowse.vue'),
+);
+const BoardBrowse = defineAsyncComponent(() => import('../components/browse/BoardBrowse.vue'));
+
+const ui = useUiStore();
 const entries = useEntriesStore();
 const dicts = useDictionariesStore();
-const ui = useUiStore();
 
 const capType = ref('tool');
 const capText = ref('');
@@ -47,7 +55,13 @@ async function capture() {
 </script>
 
 <template>
-  <div class="page">
+  <!-- 结构决定“工作台”怎么组织（04-frontend：结构同时作用于工作台与条目两类页面）。
+       非三栏结构的工作台与条目页共用浏览视图（原型行为：browse(home) 渲染对应结构）。 -->
+  <DocsBrowse v-if="ui.layout === 'docs'" />
+  <GalleryBrowse v-else-if="ui.layout === 'gallery'" />
+  <LauncherBrowse v-else-if="ui.layout === 'launcher'" />
+  <BoardBrowse v-else-if="ui.layout === 'board'" />
+  <div v-else class="page">
     <!-- 首次使用引导（档案为空） -->
     <div v-if="isEmpty" class="onboarding" data-testid="onboarding">
       <h1>欢迎使用 AI 工作台</h1>

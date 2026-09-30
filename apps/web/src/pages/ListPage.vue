@@ -1,9 +1,10 @@
 <script setup lang="ts">
-// 条目页（结构 1 三栏默认形态；其他结构由 WP7A-D 替换“浏览”部分）。
-// 桌面：列表 + 详情；手机：列表与详情分两屏（地址不变，靠 CSS 切换）。
-import { computed, ref, watch } from 'vue';
+// 条目页：按当前结构渲染浏览视图（08-ui-spec#界面结构）。
+// 结构 1（三栏）为默认；2 卡片墙 / 3 搜索优先 / 4 看板 / 5 知识库 由 ui.layout 决定，懒加载。
+import { computed, ref, watch, defineAsyncComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import { useEntriesStore, useDictionariesStore } from '../stores/data';
+import { useUiStore } from '../stores/ui';
 import { scopeEntries } from '../lib/display';
 import { STATUSES } from '@aikit/shared';
 import EntryRow from '../components/EntryRow.vue';
@@ -11,9 +12,32 @@ import EntryDetail from '../components/EntryDetail.vue';
 import FilterBar from '../components/FilterBar.vue';
 import RevisionDrawer from '../components/RevisionDrawer.vue';
 
+const GalleryBrowse = defineAsyncComponent(() => import('../components/browse/GalleryBrowse.vue'));
+const LauncherBrowse = defineAsyncComponent(
+  () => import('../components/browse/LauncherBrowse.vue'),
+);
+const BoardBrowse = defineAsyncComponent(() => import('../components/browse/BoardBrowse.vue'));
+const DocsBrowse = defineAsyncComponent(() => import('../components/browse/DocsBrowse.vue'));
+
 const route = useRoute();
 const entries = useEntriesStore();
 const dicts = useDictionariesStore();
+const ui = useUiStore();
+
+const browseView = computed(() => {
+  switch (ui.layout) {
+    case 'gallery':
+      return GalleryBrowse;
+    case 'launcher':
+      return LauncherBrowse;
+    case 'board':
+      return BoardBrowse;
+    case 'docs':
+      return DocsBrowse;
+    default:
+      return null;
+  }
+});
 
 const scope = computed(() => String(route.params.scope ?? 'all'));
 const selectedId = computed(() => (route.params.id ? String(route.params.id) : null));
@@ -64,7 +88,8 @@ function onListKeydown(ev: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="split" :class="{ 'has-detail': Boolean(selectedId) }">
+  <component :is="browseView" v-if="browseView" />
+  <div v-else class="split" :class="{ 'has-detail': Boolean(selectedId) }">
     <section class="list-pane" aria-label="条目列表" @keydown="onListKeydown">
       <FilterBar ref="filterBar" :scope="scope" :show-status="!isStatusScope" @change="() => {}" />
       <div class="list" data-testid="entry-list">
