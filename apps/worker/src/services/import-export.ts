@@ -390,7 +390,7 @@ async function importMerge(
     if (findings.length) throw secretDetectedError(findings);
 
     const clientEntryId = prototypeIds ? undefined : draft.data.id; // prototype 模式一律重新生成 id
-    let entryId = clientEntryId ?? ulid();
+    const entryId = clientEntryId ?? ulid();
 
     // (type, slug) 冲突：加后缀
     let slug = draft.data.slug ?? slugify(draft.data.title);

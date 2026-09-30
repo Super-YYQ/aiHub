@@ -4,7 +4,7 @@
 
 ## 当前
 
-- 🟡 WP6 前端骨架与本地数据层
+- 🟡 WP7 共用页面、结构 1 与外观设置
 
 ## 明细
 
@@ -16,8 +16,8 @@
 | WP3     | 🟡   | JWT 校验/角色/权限/本地开发身份                                                      |
 | WP4     | ✅   | 全部接口实现+验收 15 测试：batch 行数/409/428/422/环境删除保留条目/修订恢复          |
 | WP5     | 🟡   | /api/sync、/api/capture（幂等）、/api/export、/api/import 三模式                     |
-| WP6     | 🟡   | Vue 骨架、Dexie、同步引擎（outbox/退避/锁/广播）                                    |
-| WP7     | ⬜   |                                                                                      |
+| WP6     | 🟡   | Vue 骨架、Dexie、同步引擎（outbox/退避/锁/广播）                                     |
+| WP7     | 🟡   | 三栏工作台/条目页、共用编辑/环境/设置、命令面板、冲突对话框、三套配色令牌         |
 | WP7A-D  | ⬜   |                                                                                      |
 | WP8     | ⬜   |                                                                                      |
 | WP9     | ⬜   | deploy.yml 可做；实部署待人工                                                        |
@@ -40,3 +40,4 @@
 - WP3: worker 测试 20/20（含迁移 6）✅；鉴权验收全覆盖：缺 JWT/过期/错 aud/坏签名→401，邮箱不在白名单/未知服务令牌→403，backup/capture/agent 表外→403，production+DEV_AUTH_EMAIL 不旁路
 - WP4: worker 35/35 ✅（鉴权 14 + 迁移 6 + 条目验收 8 + 字典/标签 7）；stacks 表补 version 列（迁移与 02 文档同步）
 - WP5: worker 40/40 ✅；验收全覆盖：since=0 拉全量与 export 一致、增量拿到写入/删除、幂等键两次响应相同且只 1 行、export→replace→export 除 exportedAt 逐字段相同、prototype 导入 21/3；导入补 change_log（修同步可见性）
+- WP6: web test 5/5（离线入 outbox→联网顺序上传、409 冲突态保留、422 撤销、BroadcastChannel 刷新、锁降级串行）✅；wrangler dev 实测 /api/health + 前端 + SPA 回退（/stacks→200 html）

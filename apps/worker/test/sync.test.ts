@@ -183,7 +183,7 @@ describe('导出 → replace 导入 → 再导出 往返', () => {
     );
 
     const strip = (o: Record<string, unknown>) => {
-      const { exportedAt, ...rest } = o;
+      const { exportedAt: _exportedAt, ...rest } = o;
       return rest;
     };
     expect(strip(second)).toEqual(strip(first));

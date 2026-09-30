@@ -1,0 +1,441 @@
+/* 基础样式：令牌取自原型（styles.css/themes.css 的数值）。
+   三套配色的完整令牌在 WP7 加入 tokens.css；这里是骨架所需的最小集。 */
+:root {
+  --bg: #f2f4f3;
+  --surface: #ffffff;
+  --soft: #e8edee;
+  --line: #d6dde1;
+  --ink: #17212b;
+  --muted: #5a6672;
+  --focus: #2f6db5;
+  --danger: #b4232c;
+  --t-tool: #2f6db5;
+  --t-prompt: #8349bd;
+  --t-skill: #237f50;
+  --t-mcp: #c43d32;
+  --t-hook: #a36700;
+  --t-plugin: #0b7a87;
+  --t-config: #56626f;
+  --t-model: #ad3571;
+  --font-sans:
+    'HarmonyOS Sans SC', 'MiSans', 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei',
+    system-ui, sans-serif;
+  --font-mono:
+    'Sarasa Mono SC', 'JetBrains Mono', 'Cascadia Mono', Consolas, 'Microsoft YaHei UI', monospace;
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+  --rail-w: 232px;
+  --list-w: 400px;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #141b22;
+  --surface: #1a232c;
+  --soft: #222d37;
+  --line: #2e3a45;
+  --ink: #e5ebef;
+  --muted: #95a3af;
+  --focus: #7fb0ea;
+  --danger: #f07178;
+  --t-tool: #78a9e6;
+  --t-prompt: #b99ae6;
+  --t-skill: #6cc394;
+  --t-mcp: #ee8a80;
+  --t-hook: #e2b04f;
+  --t-plugin: #5cc1cc;
+  --t-config: #a4afba;
+  --t-model: #e58db8;
+  color-scheme: dark;
+}
+
+[data-type='tool'] {
+  --tc: var(--t-tool);
+}
+[data-type='prompt'] {
+  --tc: var(--t-prompt);
+}
+[data-type='skill'] {
+  --tc: var(--t-skill);
+}
+[data-type='mcp'] {
+  --tc: var(--t-mcp);
+}
+[data-type='hook'] {
+  --tc: var(--t-hook);
+}
+[data-type='plugin'] {
+  --tc: var(--t-plugin);
+}
+[data-type='config'] {
+  --tc: var(--t-config);
+}
+[data-type='model'] {
+  --tc: var(--t-model);
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.6 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+a {
+  color: var(--focus);
+}
+code,
+pre,
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+  height: 100vh;
+}
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px 12px;
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  view-transition-name: rail;
+}
+.brand {
+  font-size: 17px;
+  font-weight: 700;
+  padding: 0 8px;
+}
+.brand small {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--muted);
+}
+.nav-group h2 {
+  margin: 0 0 4px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--r-md);
+  text-align: left;
+  text-decoration: none;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.nav-item:hover {
+  background: var(--soft);
+}
+.nav-item[aria-current='page'] {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-weight: 600;
+}
+.nav-item .count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.swatch {
+  flex: none;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--tc, var(--muted));
+}
+.rail-foot {
+  margin-top: auto;
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  view-transition-name: topbar;
+}
+.topbar .title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-right: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(360px, 40vw);
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+}
+.search-trigger kbd {
+  margin-left: auto;
+}
+kbd {
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: var(--r-sm);
+  font: 11px/1.6 var(--font-mono);
+  color: var(--muted);
+  background: var(--surface);
+}
+.view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  view-transition-name: main;
+}
+.tabbar {
+  display: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.btn:hover {
+  background: var(--soft);
+}
+.btn-primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+  font-weight: 600;
+}
+.btn-danger {
+  color: var(--danger);
+}
+.btn-sm {
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: var(--r-sm);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--soft);
+  font-size: 12px;
+  line-height: 22px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.st {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.st::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.st-using::before {
+  background: var(--ink);
+}
+.st-trying::before {
+  border: 1.5px solid var(--ink);
+  background: linear-gradient(90deg, var(--ink) 50%, transparent 50%);
+}
+.st-wishlist::before {
+  border: 1.5px solid var(--muted);
+}
+.st-inbox::before {
+  border: 1.5px dashed var(--muted);
+}
+.st-archived {
+  text-decoration: line-through;
+}
+.st-archived::before {
+  background: var(--line);
+}
+.path {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.path b {
+  font-weight: 600;
+  color: var(--tc);
+}
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tc);
+}
+.type-badge::before {
+  content: '';
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--tc);
+}
+
+.page {
+  max-width: 1080px;
+  padding: 28px 32px 72px;
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --list-w: 340px;
+  }
+}
+@media (max-width: 860px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rail {
+    display: none;
+  }
+  .main {
+    height: 100dvh;
+  }
+  .topbar {
+    padding: 10px 14px;
+  }
+  .search-trigger {
+    width: auto;
+    flex: 1;
+  }
+  .search-trigger kbd {
+    display: none;
+  }
+  .view {
+    padding-bottom: 64px;
+  }
+  .page {
+    padding: 18px 16px 40px;
+  }
+  .tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+    view-transition-name: tabbar;
+  }
+  .tabbar a,
+  .tabbar button {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    padding: 6px 0;
+    border: 0;
+    background: none;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .tabbar [aria-current='page'] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .tabbar .add .icon {
+    width: 26px;
+    height: 26px;
+    padding: 4px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

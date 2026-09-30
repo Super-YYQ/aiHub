@@ -292,7 +292,7 @@ export function createApp() {
     const key = c.req.header('Idempotency-Key');
     const { value } = await withIdempotency(c.env.DB, key, async () => {
       const entry = await captureService.capture(c.env.DB, payload);
-      return { status: 201 as 201, body: entry };
+      return { status: 201, body: entry } as { status: 201; body: typeof entry };
     });
     return c.json(value.body, 201, { ETag: `"${(value.body as { version: number }).version}"` });
   });
