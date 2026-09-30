@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { scanText, scanEntry, isPlaceholder } from '../src/secret-scan';
+import { scanText, scanEntry, isPlaceholder } from '../src/secret-scan.js';
 
 // 假密钥：形状能命中规则，但都是明显的占位重复串，仅供测试扫描器。
 const FAKE = {

@@ -1,5 +1,5 @@
 // 搜索与高亮（规则见 docs/detailed/04-frontend.md#搜索，与原型 prototype/app.js 一致）。
-import { BUILTIN_TYPES } from './dictionaries';
+import { BUILTIN_TYPES } from './dictionaries.js';
 
 export interface SearchableEntry {
   id: string;

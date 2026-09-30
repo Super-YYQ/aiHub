@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import type { PrototypeExport } from '../src/prototype';
+import type { PrototypeExport } from '../src/prototype.js';
 
 /** 读取并执行 prototype/data.js，取出 window.AIKIT_SEED（测试单一数据源）。 */
 export function loadPrototypeSeed(): PrototypeExport {

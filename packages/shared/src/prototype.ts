@@ -1,6 +1,6 @@
 // 原型数据转换：prototype/data.js 的 { stacks, entries } → 合法导入数据。
 // 规则见 docs/detailed/02-data-model.md#导入（prototype 模式）。
-import { ulid, snippetId } from './ids';
+import { ulid, snippetId } from './ids.js';
 
 interface ProtoStack {
   id: string;

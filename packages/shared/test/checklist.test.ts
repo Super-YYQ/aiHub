@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildChecklist } from '../src/checklist';
+import { buildChecklist } from '../src/checklist.js';
 
 describe('安装清单生成', () => {
   it('按类型分组、待勾选、附安装命令', () => {

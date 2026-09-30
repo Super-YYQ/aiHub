@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import type { Env } from './env';
 import { securityHeaders } from './middleware/security-headers';
+
+/** Env 是 wrangler types 生成的全局接口（worker-configuration.d.ts）。 */
 
 /**
  * Worker 应用：一个 Hono 实例托管 /api/* 与 /mcp。

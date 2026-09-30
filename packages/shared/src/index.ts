@@ -3,13 +3,13 @@
 
 export const SHARED_VERSION = '0.1.0';
 
-export * from './dictionaries';
-export * from './ids';
-export * from './schema';
-export * from './secret-scan';
-export * from './search';
-export * from './variables';
-export * from './capture';
-export * from './markdown';
-export * from './checklist';
-export * from './prototype';
+export * from './dictionaries.js';
+export * from './ids.js';
+export * from './schema.js';
+export * from './secret-scan.js';
+export * from './search.js';
+export * from './variables.js';
+export * from './capture.js';
+export * from './markdown.js';
+export * from './checklist.js';
+export * from './prototype.js';

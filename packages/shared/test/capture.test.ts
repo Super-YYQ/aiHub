@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { captureToDraft } from '../src/capture';
+import { captureToDraft } from '../src/capture.js';
 
 describe('快速记录转换', () => {
   it('整段是 URL：标题取域名+路径，存为链接', () => {

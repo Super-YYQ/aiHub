@@ -1,6 +1,6 @@
 // 安装清单：按类型分组、待勾选，附各条目标记为“安装命令”的片段（见 docs/detailed/03-api.md 环境）。
-import { BUILTIN_TYPES, TYPE_ORDER } from './dictionaries';
-import { fenceFor } from './markdown';
+import { BUILTIN_TYPES, TYPE_ORDER } from './dictionaries.js';
+import { fenceFor } from './markdown.js';
 
 const BUILTIN_TYPE_NAME: Record<string, string> = Object.fromEntries(
   BUILTIN_TYPES.map((t) => [t.id, t.name]),

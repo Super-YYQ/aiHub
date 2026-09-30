@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { serializeEntry, fenceFor } from '../src/markdown';
+import { serializeEntry, fenceFor } from '../src/markdown.js';
 
 const base = {
   id: '01ARZ0N1K4J4P7Q9M5F8D2T3AB',

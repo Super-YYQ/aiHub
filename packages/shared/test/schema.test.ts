@@ -13,7 +13,7 @@ import {
   proposalCreateSchema,
   importModeSchema,
   exportSchema,
-} from '../src/schema';
+} from '../src/schema.js';
 
 const ULID = '01M3R0BSKXW6ZTBW0ZYH3G6M18';
 const ULID2 = '01M3R0C20J7N99XYBXVSNM4AQG';

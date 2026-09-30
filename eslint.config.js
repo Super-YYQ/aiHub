@@ -44,6 +44,17 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/*.mjs', '**/scripts/**'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+      },
+    },
+  },
+  {
     files: ['**/*.test.ts', '**/*.spec.ts', '**/vitest.config.ts', '**/*.config.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',

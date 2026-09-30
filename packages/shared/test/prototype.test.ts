@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { convertPrototype } from '../src/prototype';
+import { convertPrototype } from '../src/prototype.js';
 import { loadPrototypeSeed } from './helpers';
-import { entryDraftSchema, stackSchema, entrySchema } from '../src/schema';
-import { isUlid } from '../src/ids';
+import { entryDraftSchema, stackSchema, entrySchema } from '../src/schema.js';
+import { isUlid } from '../src/ids.js';
 
 const seed = loadPrototypeSeed();
 

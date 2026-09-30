@@ -2,12 +2,12 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "types": ["@cloudflare/workers-types", "vitest/globals"],
     "paths": {
       "@aikit/shared": ["../../packages/shared/src/index.ts"]
     }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "drizzle.config.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts", "drizzle.config.ts", "worker-configuration.d.ts"],
   "exclude": ["node_modules", "dist", ".wrangler"]
 }

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { searchEntries, highlightSegments, tokenize } from '../src/search';
+import { searchEntries, highlightSegments, tokenize } from '../src/search.js';
 import { loadPrototypeSeed } from './helpers';
-import { convertPrototype } from '../src/prototype';
+import { convertPrototype } from '../src/prototype.js';
 
 // 用原型的 21 条示例数据复现原型行为（WP1 验收）。
 const seed = loadPrototypeSeed();

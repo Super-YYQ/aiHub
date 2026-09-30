@@ -1,8 +1,8 @@
 // 全部实体的 Zod schema 与类型，按 docs/detailed/02-data-model.md 实现。
 // JSON 用 camelCase；schema 前后端共用，服务端校验为准。
 import { z } from 'zod';
-import { STATUSES, STACK_KINDS, STACK_OS } from './dictionaries';
-import { isUlid, isValidSlug } from './ids';
+import { STATUSES, STACK_KINDS, STACK_OS } from './dictionaries.js';
+import { isUlid, isValidSlug } from './ids.js';
 
 // ---------- 基础片段 ----------
 export const TYPE_ID_RE = /^[a-z][a-z0-9-]{1,23}$/;
@@ -73,6 +73,9 @@ export const snippetSchema = z.object({
   install: z.boolean().default(false),
 });
 
+/** 存储态片段：id 必填（条目内唯一，用于稳定引用）。 */
+export const storedSnippetSchema = snippetSchema.extend({ id: z.string().min(1).max(16) });
+
 export const linkSchema = z.object({
   label: z.string().max(60, '链接标题最多 60 字符').default(''),
   url: httpUrlSchema,
@@ -116,7 +119,7 @@ export const entrySchema = z.object({
   platforms: platformsSchema,
   tags: tagsSchema,
   fields: fieldsSchema,
-  snippets: z.array(snippetSchema.extend({ id: z.string().min(1) })).max(20),
+  snippets: z.array(storedSnippetSchema).max(20),
   links: z.array(linkSchema).max(20),
   body: z.string().max(50000),
   stacks: z.array(stackRefSchema).default([]),
@@ -252,6 +255,7 @@ export const exportSchema = z.object({
 
 // ---------- 推断类型 ----------
 export type Snippet = z.infer<typeof snippetSchema>;
+export type StoredSnippet = z.infer<typeof storedSnippetSchema>;
 export type Link = z.infer<typeof linkSchema>;
 export type StackRef = z.infer<typeof stackRefSchema>;
 export type Entry = z.infer<typeof entrySchema>;

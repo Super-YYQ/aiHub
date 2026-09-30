@@ -1,5 +1,5 @@
 // 快速记录转换：把一段文本变成“待整理”条目草稿（见 docs/detailed/03-api.md#快速记录，与原型一致）。
-import { slugify } from './ids';
+import { slugify } from './ids.js';
 
 export interface CaptureInput {
   type: string;

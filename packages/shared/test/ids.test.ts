@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ulid, isUlid, isValidSlug, slugify, snippetId } from '../src/ids';
+import { ulid, isUlid, isValidSlug, slugify, snippetId } from '../src/ids.js';
 
 describe('ulid', () => {
   it('生成 26 位 Crockford Base32', () => {

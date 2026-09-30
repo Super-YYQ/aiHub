@@ -1,0 +1,977 @@
+{
+  "schemaVersion": 1,
+  "generatedFrom": "prototype/data.js",
+  "stacks": [
+    {
+      "id": "01M3R1G0C16AWVN6XMMCPWS677",
+      "name": "主力 Windows 工作站",
+      "kind": "pc",
+      "os": "windows",
+      "description": "Windows 11，日常开发，Claude Code 与 Codex 并用",
+      "sort": 0,
+      "createdAt": "2026-09-30T02:15:00.224Z",
+      "updatedAt": "2026-09-30T02:15:00.224Z"
+    },
+    {
+      "id": "01M3R1G0C398KRM2DH8VGZKAW7",
+      "name": "Oracle 2C2G 服务器",
+      "kind": "server",
+      "os": "linux",
+      "description": "Ubuntu，远程会话和实验用",
+      "sort": 1,
+      "createdAt": "2026-09-30T02:15:00.224Z",
+      "updatedAt": "2026-09-30T02:15:00.224Z"
+    },
+    {
+      "id": "01M3R1G0C36RBP0EW6H2JT0EPZ",
+      "name": "手机",
+      "kind": "phone",
+      "os": "any",
+      "description": "随手查提示词、记录新发现",
+      "sort": 2,
+      "createdAt": "2026-09-30T02:15:00.224Z",
+      "updatedAt": "2026-09-30T02:15:00.224Z"
+    }
+  ],
+  "entries": [
+    {
+      "id": "01M3R1G0C30EVGKS83K5S9KNZD",
+      "type": "tool",
+      "slug": "claude-code",
+      "title": "Claude Code",
+      "summary": "终端里的编码代理，主力工具。插件、Skill、Hook、MCP 都挂在它上面。",
+      "status": "using",
+      "pinned": true,
+      "rating": 5,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "CLI",
+        "编码代理"
+      ],
+      "fields": {
+        "类别": "CLI 编码代理",
+        "配置目录": "~/.claude/",
+        "费用": "订阅或 API 计费"
+      },
+      "snippets": [
+        {
+          "id": "hp431a3p",
+          "label": "安装（Windows 原生）",
+          "lang": "powershell",
+          "code": "irm https://claude.ai/install.ps1 | iex",
+          "install": true
+        },
+        {
+          "id": "gcbh47cc",
+          "label": "安装（npm）",
+          "lang": "bash",
+          "code": "npm install -g @anthropic-ai/claude-code",
+          "install": false
+        },
+        {
+          "id": "g6jbf699",
+          "label": "查看已装 MCP",
+          "lang": "bash",
+          "code": "claude mcp list",
+          "install": false
+        }
+      ],
+      "links": [
+        {
+          "label": "官方文档",
+          "url": "https://docs.claude.com/en/docs/claude-code/overview"
+        }
+      ],
+      "body": "## 使用习惯\n\n- 全局规则写在 `~/.codex/AGENTS.md`，`~/.claude/CLAUDE.md` 只放一行 `@~/.codex/AGENTS.md` 引用，两个工具共用一份。\n- 大任务先进 plan 模式，确认后再动手。\n\n## 新机器检查\n\n1. 装好 Node 与 Git\n2. 安装 Claude Code\n3. 按本环境的“安装清单”装插件和 MCP",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        },
+        {
+          "id": "01M3R1G0C398KRM2DH8VGZKAW7",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-03-02T00:00:00.000Z",
+      "updatedAt": "2026-09-26T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C3MHYC5XPQB3A78S01",
+      "type": "tool",
+      "slug": "codex-cli",
+      "title": "Codex CLI",
+      "summary": "OpenAI 的终端编码代理，和 Claude Code 共用 AGENTS.md。",
+      "status": "using",
+      "pinned": false,
+      "rating": 4,
+      "platforms": [
+        "codex"
+      ],
+      "tags": [
+        "CLI",
+        "编码代理"
+      ],
+      "fields": {
+        "类别": "CLI 编码代理",
+        "配置文件": "~/.codex/config.toml",
+        "规则文件": "~/.codex/AGENTS.md"
+      },
+      "snippets": [
+        {
+          "id": "dhg3cc74",
+          "label": "安装",
+          "lang": "bash",
+          "code": "npm install -g @openai/codex",
+          "install": true
+        }
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/openai/codex"
+        }
+      ],
+      "body": "适合做第二意见：同一个问题让两个代理各给一版方案，再对比。",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-04-11T00:00:00.000Z",
+      "updatedAt": "2026-09-10T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C3VHEQ713TYNESVHC6",
+      "type": "config",
+      "slug": "agents-md",
+      "title": "全局 AGENTS.md（两个代理共用）",
+      "summary": "执行范围、验证、Git 推送安全、README、Planning、Windows 约定。",
+      "status": "using",
+      "pinned": true,
+      "rating": 5,
+      "platforms": [
+        "claude-code",
+        "codex"
+      ],
+      "tags": [
+        "规则",
+        "全局"
+      ],
+      "fields": {
+        "文件路径": "~/.codex/AGENTS.md",
+        "引用方式": "~/.claude/CLAUDE.md 中写 @~/.codex/AGENTS.md",
+        "生效范围": "所有项目"
+      },
+      "snippets": [
+        {
+          "id": "xzacgnqj",
+          "label": "~/.claude/CLAUDE.md",
+          "lang": "markdown",
+          "code": "@~/.codex/AGENTS.md",
+          "install": false
+        },
+        {
+          "id": "8pahk9c9",
+          "label": "规则骨架",
+          "lang": "markdown",
+          "code": "## 1. 执行范围\n## 2. 验证\n## 3. Git 与远端安全\n## 4. README\n## 5. Planning 与并行\n## 6. 澄清与交付\n## 7. Windows",
+          "install": false
+        }
+      ],
+      "links": [],
+      "body": "改动规则后，在这里记一笔**为什么改**，方便日后回看。\n\n- 2026-09：Push 前增加历史提交敏感信息检查",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-02-18T00:00:00.000Z",
+      "updatedAt": "2026-09-28T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C3YW2Q3Z1T0X1CXHYM",
+      "type": "config",
+      "slug": "claude-settings",
+      "title": "settings.json 权限基线",
+      "summary": "常用只读命令免确认，危险命令一律询问。",
+      "status": "trying",
+      "pinned": false,
+      "rating": 3,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "权限"
+      ],
+      "fields": {
+        "文件路径": "~/.claude/settings.json",
+        "生效方式": "重启会话后生效"
+      },
+      "snippets": [
+        {
+          "id": "zcmrkw34",
+          "label": "权限片段",
+          "lang": "json",
+          "code": "{\n  \"permissions\": {\n    \"allow\": [\"Bash(git status)\", \"Bash(git diff:*)\", \"Bash(rg:*)\"],\n    \"ask\": [\"Bash(git push:*)\"]\n  }\n}",
+          "install": false
+        }
+      ],
+      "links": [
+        {
+          "label": "设置文档",
+          "url": "https://docs.claude.com/en/docs/claude-code/settings"
+        }
+      ],
+      "body": "密钥不要写进这里，用环境变量；本工具只记录变量名。",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-06-01T00:00:00.000Z",
+      "updatedAt": "2026-08-15T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C3NRDP1TX0KQXZXJJR",
+      "type": "plugin",
+      "slug": "superpowers",
+      "title": "superpowers",
+      "summary": "一组工程化工作流 Skill：头脑风暴、写计划、TDD、调试等。",
+      "status": "using",
+      "pinned": false,
+      "rating": 4,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "工作流"
+      ],
+      "fields": {
+        "市场": "claude-plugins-official",
+        "包含": "Skills、Commands"
+      },
+      "snippets": [
+        {
+          "id": "krb5faf5",
+          "label": "添加市场",
+          "lang": "text",
+          "code": "/plugin marketplace add anthropics/claude-plugins-official",
+          "install": true
+        },
+        {
+          "id": "8ea2qzmz",
+          "label": "安装",
+          "lang": "text",
+          "code": "/plugin install superpowers@claude-plugins-official",
+          "install": true
+        }
+      ],
+      "links": [
+        {
+          "label": "市场仓库",
+          "url": "https://github.com/anthropics/claude-plugins-official"
+        }
+      ],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-05-20T00:00:00.000Z",
+      "updatedAt": "2026-09-01T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C34BTY74AMS00GX00A",
+      "type": "plugin",
+      "slug": "planning-with-files",
+      "title": "planning-with-files",
+      "summary": "把计划、发现、进度写进 .planning/ 目录，长任务可跨会话恢复。",
+      "status": "using",
+      "pinned": false,
+      "rating": 4,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "计划",
+        "工作流"
+      ],
+      "fields": {
+        "市场": "planning-with-files",
+        "来源仓库": "OthmanAdi/planning-with-files"
+      },
+      "snippets": [
+        {
+          "id": "dn44ykx7",
+          "label": "添加市场",
+          "lang": "text",
+          "code": "/plugin marketplace add OthmanAdi/planning-with-files",
+          "install": true
+        },
+        {
+          "id": "b2fsq6qc",
+          "label": "安装",
+          "lang": "text",
+          "code": "/plugin install planning-with-files@planning-with-files",
+          "install": true
+        }
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/OthmanAdi/planning-with-files"
+        }
+      ],
+      "body": "AGENTS.md 第 5 节约定：小任务不启用。",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-05-02T00:00:00.000Z",
+      "updatedAt": "2026-08-30T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C3FN9SQ7N1CGWWMM4H",
+      "type": "plugin",
+      "slug": "frontend-design",
+      "title": "frontend-design",
+      "summary": "做新界面时提供视觉方向与排版约束，避免模板味。",
+      "status": "using",
+      "pinned": false,
+      "rating": 4,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "前端",
+        "设计"
+      ],
+      "fields": {
+        "市场": "claude-plugins-official",
+        "包含": "Skill"
+      },
+      "snippets": [
+        {
+          "id": "p906m17z",
+          "label": "安装",
+          "lang": "text",
+          "code": "/plugin install frontend-design@claude-plugins-official",
+          "install": true
+        }
+      ],
+      "links": [],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-06-12T00:00:00.000Z",
+      "updatedAt": "2026-09-29T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4DYKYCHYH53WN9S96",
+      "type": "plugin",
+      "slug": "ui-ux-pro-max",
+      "title": "ui-ux-pro-max",
+      "summary": "UI/UX 资料库：配色、字体搭配、组件规范，可检索。",
+      "status": "trying",
+      "pinned": false,
+      "rating": 3,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "前端",
+        "设计"
+      ],
+      "fields": {
+        "市场": "ui-ux-pro-max-skill",
+        "来源仓库": "nextlevelbuilder/ui-ux-pro-max-skill"
+      },
+      "snippets": [
+        {
+          "id": "qsht99r2",
+          "label": "添加市场",
+          "lang": "text",
+          "code": "/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill",
+          "install": true
+        },
+        {
+          "id": "vz0x2e2y",
+          "label": "安装",
+          "lang": "text",
+          "code": "/plugin install ui-ux-pro-max@ui-ux-pro-max-skill",
+          "install": true
+        }
+      ],
+      "links": [],
+      "body": "内容很全，但一次加载的上下文偏多，只在需要设计系统时用。",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-07-08T00:00:00.000Z",
+      "updatedAt": "2026-09-12T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4BHYW6VMDCCXD43K8",
+      "type": "plugin",
+      "slug": "lsp-bundle",
+      "title": "LSP 插件组",
+      "summary": "typescript / pyright / jdtls / rust-analyzer，给代理提供跳转与类型信息。",
+      "status": "using",
+      "pinned": false,
+      "rating": 4,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "LSP"
+      ],
+      "fields": {
+        "市场": "claude-plugins-official",
+        "依赖": "本机需装好对应语言服务器"
+      },
+      "snippets": [
+        {
+          "id": "s1zjjzsx",
+          "label": "安装",
+          "lang": "text",
+          "code": "/plugin install typescript-lsp@claude-plugins-official\n/plugin install pyright-lsp@claude-plugins-official\n/plugin install jdtls-lsp@claude-plugins-official\n/plugin install rust-analyzer-lsp@claude-plugins-official",
+          "install": true
+        }
+      ],
+      "links": [],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-07-20T00:00:00.000Z",
+      "updatedAt": "2026-09-05T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4RZMBH6S7SBMAT2TC",
+      "type": "skill",
+      "slug": "karpathy-guidelines",
+      "title": "karpathy-guidelines",
+      "summary": "写代码前先说清假设，改动保持外科手术式，定义可验证的完成标准。",
+      "status": "using",
+      "pinned": false,
+      "rating": 4,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "编码规范"
+      ],
+      "fields": {
+        "宿主": "Claude Code",
+        "来自插件": "andrej-karpathy-skills@karpathy-skills",
+        "触发": "写、审、重构代码时"
+      },
+      "snippets": [
+        {
+          "id": "h9sgh94m",
+          "label": "添加市场",
+          "lang": "text",
+          "code": "/plugin marketplace add forrestchang/andrej-karpathy-skills",
+          "install": true
+        },
+        {
+          "id": "7mk8ec2z",
+          "label": "安装",
+          "lang": "text",
+          "code": "/plugin install andrej-karpathy-skills@karpathy-skills",
+          "install": true
+        }
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/forrestchang/andrej-karpathy-skills"
+        }
+      ],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-05-15T00:00:00.000Z",
+      "updatedAt": "2026-08-02T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4SBPNHKWM24FYHDSV",
+      "type": "skill",
+      "slug": "tdd",
+      "title": "tdd（红-绿-重构）",
+      "summary": "先写失败的测试，再写实现，适合修 bug 前固定复现。",
+      "status": "trying",
+      "pinned": false,
+      "rating": 3,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "测试"
+      ],
+      "fields": {
+        "宿主": "Claude Code",
+        "来自插件": "mattpocock-skills@claude-plugins-official",
+        "触发": "提到 TDD 或先写测试"
+      },
+      "snippets": [
+        {
+          "id": "sxtnkypr",
+          "label": "安装",
+          "lang": "text",
+          "code": "/plugin install mattpocock-skills@claude-plugins-official",
+          "install": true
+        }
+      ],
+      "links": [],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-08-21T00:00:00.000Z",
+      "updatedAt": "2026-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4CQ47555WRFFMDZ3Q",
+      "type": "mcp",
+      "slug": "playwright",
+      "title": "Playwright MCP",
+      "summary": "让代理驱动真实浏览器：打开页面、点击、截图，用来验证前端改动。",
+      "status": "using",
+      "pinned": true,
+      "rating": 5,
+      "platforms": [
+        "claude-code",
+        "codex"
+      ],
+      "tags": [
+        "浏览器",
+        "测试"
+      ],
+      "fields": {
+        "传输": "stdio",
+        "命令": "npx @playwright/mcp@latest",
+        "作用域": "user",
+        "需要的环境变量": "无"
+      },
+      "snippets": [
+        {
+          "id": "8p2wbnby",
+          "label": "Claude Code",
+          "lang": "bash",
+          "code": "claude mcp add playwright -- npx @playwright/mcp@latest",
+          "install": true
+        },
+        {
+          "id": "stv84g16",
+          "label": "Codex（~/.codex/config.toml）",
+          "lang": "toml",
+          "code": "[mcp_servers.playwright]\ncommand = \"npx\"\nargs = [\"@playwright/mcp@latest\"]",
+          "install": false
+        }
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/microsoft/playwright-mcp"
+        }
+      ],
+      "body": "Claude Code 这边已通过 playwright 插件安装，无需再手动 add。",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-04-30T00:00:00.000Z",
+      "updatedAt": "2026-09-22T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4AJFDZV52ZV0TRK1P",
+      "type": "mcp",
+      "slug": "chrome-devtools",
+      "title": "Chrome DevTools MCP",
+      "summary": "读控制台、网络请求和性能数据，排查页面问题比截图更直接。",
+      "status": "using",
+      "pinned": false,
+      "rating": 4,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "浏览器",
+        "调试"
+      ],
+      "fields": {
+        "传输": "stdio",
+        "命令": "npx chrome-devtools-mcp@latest",
+        "作用域": "user",
+        "来自插件": "chrome-devtools-mcp@claude-plugins-official"
+      },
+      "snippets": [
+        {
+          "id": "mx5ga4en",
+          "label": "Claude Code",
+          "lang": "bash",
+          "code": "claude mcp add chrome-devtools -- npx chrome-devtools-mcp@latest",
+          "install": true
+        }
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp"
+        }
+      ],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-06-03T00:00:00.000Z",
+      "updatedAt": "2026-09-02T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4PA6NG9B5GAFV5FSA",
+      "type": "mcp",
+      "slug": "context7",
+      "title": "Context7",
+      "summary": "按版本拉取第三方库的最新文档，减少代理凭记忆写过时 API。",
+      "status": "wishlist",
+      "pinned": false,
+      "rating": 0,
+      "platforms": [
+        "claude-code",
+        "cursor"
+      ],
+      "tags": [
+        "文档"
+      ],
+      "fields": {
+        "传输": "http",
+        "地址": "https://mcp.context7.com/mcp",
+        "作用域": "user"
+      },
+      "snippets": [
+        {
+          "id": "aqqxb1a9",
+          "label": "Claude Code",
+          "lang": "bash",
+          "code": "claude mcp add --transport http context7 https://mcp.context7.com/mcp",
+          "install": true
+        }
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/upstash/context7"
+        }
+      ],
+      "body": "待验证：国内网络下的响应速度。",
+      "stacks": [],
+      "createdAt": "2026-09-14T00:00:00.000Z",
+      "updatedAt": "2026-09-14T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4AFGY7RKS65NMA8GD",
+      "type": "hook",
+      "slug": "format-on-edit",
+      "title": "改完文件自动格式化",
+      "summary": "Edit/Write 之后对改动的文件跑 prettier，省掉手动格式化。",
+      "status": "trying",
+      "pinned": false,
+      "rating": 3,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "格式化"
+      ],
+      "fields": {
+        "事件": "PostToolUse",
+        "匹配器": "Edit|Write",
+        "配置位置": "项目 .claude/settings.json",
+        "依赖": "jq、prettier"
+      },
+      "snippets": [
+        {
+          "id": "bx8qbhae",
+          "label": "settings.json 片段",
+          "lang": "json",
+          "code": "{\n  \"hooks\": {\n    \"PostToolUse\": [{\n      \"matcher\": \"Edit|Write\",\n      \"hooks\": [{ \"type\": \"command\", \"command\": \"jq -r '.tool_input.file_path' | xargs npx prettier --write\" }]\n    }]\n  }\n}",
+          "install": false
+        }
+      ],
+      "links": [
+        {
+          "label": "Hooks 文档",
+          "url": "https://docs.claude.com/en/docs/claude-code/hooks"
+        }
+      ],
+      "body": "只在前端项目启用；Java 项目格式化交给构建工具。",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-08-05T00:00:00.000Z",
+      "updatedAt": "2026-09-19T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C409M4CAN8NRACEZ4R",
+      "type": "hook",
+      "slug": "notify-sound",
+      "title": "需要确认时响铃",
+      "summary": "代理等待授权或空闲时播放系统提示音，切到别的窗口也不会错过。",
+      "status": "wishlist",
+      "pinned": false,
+      "rating": 0,
+      "platforms": [
+        "claude-code"
+      ],
+      "tags": [
+        "Windows",
+        "提醒"
+      ],
+      "fields": {
+        "事件": "Notification",
+        "配置位置": "~/.claude/settings.json"
+      },
+      "snippets": [
+        {
+          "id": "cmgtt3pm",
+          "label": "settings.json 片段",
+          "lang": "json",
+          "code": "{\n  \"hooks\": {\n    \"Notification\": [{\n      \"hooks\": [{ \"type\": \"command\", \"command\": \"powershell -NoProfile -Command \\\"[System.Media.SystemSounds]::Asterisk.Play()\\\"\" }]\n    }]\n  }\n}",
+          "install": false
+        }
+      ],
+      "links": [],
+      "body": "",
+      "stacks": [],
+      "createdAt": "2026-09-20T00:00:00.000Z",
+      "updatedAt": "2026-09-20T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4G0TKVCWJENCMRJ8V",
+      "type": "prompt",
+      "slug": "code-review-zh",
+      "title": "中文代码评审",
+      "summary": "按正确性、安全、可读性三档输出问题，每条附文件行号与修改建议。",
+      "status": "using",
+      "pinned": true,
+      "rating": 5,
+      "platforms": [
+        "general"
+      ],
+      "tags": [
+        "评审"
+      ],
+      "fields": {
+        "适用场景": "PR 合并前自查",
+        "推荐模型": "推理强的模型",
+        "变量": "语言、关注点、diff"
+      },
+      "snippets": [
+        {
+          "id": "vmp6gz5v",
+          "label": "提示词",
+          "lang": "text",
+          "code": "你是资深 {{语言}} 工程师。请评审下面的改动，重点关注 {{关注点}}。\n\n按“必须修 / 建议修 / 可选”三档列出问题，每条给出文件与行号、问题原因、修改建议。没有问题的档位写“无”。不要复述代码。\n\n改动如下：\n{{diff}}",
+          "install": false
+        }
+      ],
+      "links": [],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        },
+        {
+          "id": "01M3R1G0C36RBP0EW6H2JT0EPZ",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-03-10T00:00:00.000Z",
+      "updatedAt": "2026-09-21T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C47J4DCG8MW7JBS2JD",
+      "type": "prompt",
+      "slug": "grill-plan",
+      "title": "方案拷问",
+      "summary": "让模型逐条追问方案里的漏洞，一次只问一个问题。",
+      "status": "using",
+      "pinned": false,
+      "rating": 4,
+      "platforms": [
+        "general"
+      ],
+      "tags": [
+        "需求",
+        "设计"
+      ],
+      "fields": {
+        "适用场景": "动手前检验思路",
+        "变量": "方案"
+      },
+      "snippets": [
+        {
+          "id": "874x3r6y",
+          "label": "提示词",
+          "lang": "text",
+          "code": "下面是我的方案。请像严格的评审人一样逐条追问：每次只问一个最关键的问题，等我回答后再问下一个。关注前提假设、边界情况、失败时怎么办。\n\n方案：\n{{方案}}",
+          "install": false
+        }
+      ],
+      "links": [],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C36RBP0EW6H2JT0EPZ",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-04-02T00:00:00.000Z",
+      "updatedAt": "2026-08-11T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C462NTGV4VSMDDZYNP",
+      "type": "prompt",
+      "slug": "commit-message",
+      "title": "生成提交信息",
+      "summary": "根据 diff 写 Conventional Commits 格式的提交信息。",
+      "status": "trying",
+      "pinned": false,
+      "rating": 3,
+      "platforms": [
+        "general"
+      ],
+      "tags": [
+        "Git"
+      ],
+      "fields": {
+        "适用场景": "提交前",
+        "变量": "diff"
+      },
+      "snippets": [
+        {
+          "id": "fjy15vv8",
+          "label": "提示词",
+          "lang": "text",
+          "code": "根据下面的 diff 写一条提交信息：第一行用 Conventional Commits 格式，不超过 72 个字符；空一行后用 2 到 4 条要点说明为什么改，而不是改了什么。\n\n{{diff}}",
+          "install": false
+        }
+      ],
+      "links": [],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-07-01T00:00:00.000Z",
+      "updatedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4W90NMAER07E4GPZV",
+      "type": "model",
+      "slug": "claude-api",
+      "title": "Claude API",
+      "summary": "脚本和自建工具调用的模型服务，只记录变量名，不记录密钥。",
+      "status": "using",
+      "pinned": false,
+      "rating": 5,
+      "platforms": [
+        "general"
+      ],
+      "tags": [
+        "API"
+      ],
+      "fields": {
+        "服务商": "Anthropic",
+        "常用模型": "claude-opus-5-5 / claude-sonnet-5-5 / claude-haiku-4-5-20251001",
+        "密钥变量": "ANTHROPIC_API_KEY"
+      },
+      "snippets": [
+        {
+          "id": "zxncgk7v",
+          "label": "检查变量是否已设置",
+          "lang": "bash",
+          "code": "test -n \"$ANTHROPIC_API_KEY\" && echo set || echo missing",
+          "install": false
+        }
+      ],
+      "links": [
+        {
+          "label": "模型列表",
+          "url": "https://docs.claude.com/en/docs/about-claude/models/overview"
+        }
+      ],
+      "body": "",
+      "stacks": [
+        {
+          "id": "01M3R1G0C16AWVN6XMMCPWS677",
+          "note": ""
+        },
+        {
+          "id": "01M3R1G0C398KRM2DH8VGZKAW7",
+          "note": ""
+        }
+      ],
+      "createdAt": "2026-02-01T00:00:00.000Z",
+      "updatedAt": "2026-09-15T00:00:00.000Z"
+    },
+    {
+      "id": "01M3R1G0C4QF0MNTEDVE3TC4E8",
+      "type": "mcp",
+      "slug": "obsidian-mcp",
+      "title": "群里有人推荐的 Obsidian MCP",
+      "summary": "还没看，先记下来。",
+      "status": "inbox",
+      "pinned": false,
+      "rating": 0,
+      "platforms": [],
+      "tags": [],
+      "fields": {},
+      "snippets": [],
+      "links": [],
+      "body": "",
+      "stacks": [],
+      "createdAt": "2026-09-29T00:00:00.000Z",
+      "updatedAt": "2026-09-29T00:00:00.000Z"
+    }
+  ]
+}

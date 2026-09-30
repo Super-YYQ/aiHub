@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseVariables, applyVariables } from '../src/variables';
+import { parseVariables, applyVariables } from '../src/variables.js';
 
 describe('变量解析与替换', () => {
   it('解析去重、去空白、保持顺序', () => {
