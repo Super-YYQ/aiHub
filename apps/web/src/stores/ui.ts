@@ -40,6 +40,7 @@ export const useUiStore = defineStore('ui', {
       paletteOpen: false,
       captureOpen: false,
       appearanceOpen: false,
+      conflictOpen: false,
     };
   },
   actions: {

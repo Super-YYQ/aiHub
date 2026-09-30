@@ -1,8 +1,14 @@
 // 数据仓库：启动时从 Dexie 读取，写入走乐观更新 + outbox（见 lib/sync）。
 import { defineStore } from 'pinia';
+import { toRaw } from 'vue';
 import type { Entry, Stack, TypeDict, PlatformDict, Proposal, StackRef } from '@aikit/shared';
 import { db } from '../lib/db';
 import { enqueueOutbox, offlineId, sync } from '../lib/sync';
+
+/** 去响应式的深拷贝：IndexedDB 的结构化克隆无法处理 reactive 代理里的特殊成员。 */
+function plain<T>(value: T): T {
+  return JSON.parse(JSON.stringify(toRaw(value))) as T;
+}
 
 export const useEntriesStore = defineStore('entries', {
   state: () => ({
@@ -23,7 +29,7 @@ export const useEntriesStore = defineStore('entries', {
     async create(draft: Record<string, unknown>, offlineCreated = false) {
       const { id, idempotencyKey } = offlineId();
       const now = new Date().toISOString();
-      const entry: Entry = {
+      const entry: Entry = plain({
         ...(draft as object),
         id,
         version: 1,
@@ -31,13 +37,13 @@ export const useEntriesStore = defineStore('entries', {
         updatedAt: now,
         deletedAt: null,
         stacks: (draft.stacks as StackRef[]) ?? [],
-      } as Entry;
+      }) as Entry;
       await db.entries.put(entry);
       this.entries = await db.entries.toArray();
       await enqueueOutbox({
         op: 'createEntry',
         entityId: offlineCreated ? id : null,
-        body: { ...draft, id },
+        body: plain({ ...draft, id }),
         baseVersion: null,
         idempotencyKey,
       });
@@ -47,8 +53,8 @@ export const useEntriesStore = defineStore('entries', {
       const current = this.byId(id);
       if (!current) return;
       const updated: Entry = {
-        ...current,
-        ...body,
+        ...plain(current),
+        ...plain(body),
         version: current.version + 1,
         updatedAt: new Date().toISOString(),
       };
@@ -70,7 +76,7 @@ export const useEntriesStore = defineStore('entries', {
       const current = this.byId(id);
       if (!current) return;
       const updated: Entry = {
-        ...current,
+        ...plain(current),
         ...patch,
         version: current.version + 1,
         updatedAt: new Date().toISOString(),

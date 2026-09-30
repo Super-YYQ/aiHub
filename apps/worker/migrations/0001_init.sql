@@ -99,6 +99,24 @@ INSERT INTO platforms (id, name, sort, builtin, updated_at) VALUES
   ('chatgpt',     'ChatGPT',     4, 1, '2026-09-29T00:00:00.000Z'),
   ('general',     '通用',        5, 1, '2026-09-29T00:00:00.000Z');
 
+-- 内置字典进变更日志：增量同步需要它们（浏览器侧的类型名/平台名）。
+INSERT INTO change_log (entity, entity_id, op, at) VALUES
+  ('type', 'tool',    'upsert', '2026-09-29T00:00:00.000Z'),
+  ('type', 'prompt',  'upsert', '2026-09-29T00:00:00.000Z'),
+  ('type', 'skill',   'upsert', '2026-09-29T00:00:00.000Z'),
+  ('type', 'mcp',     'upsert', '2026-09-29T00:00:00.000Z'),
+  ('type', 'hook',    'upsert', '2026-09-29T00:00:00.000Z'),
+  ('type', 'plugin',  'upsert', '2026-09-29T00:00:00.000Z'),
+  ('type', 'config',  'upsert', '2026-09-29T00:00:00.000Z'),
+  ('type', 'model',   'upsert', '2026-09-29T00:00:00.000Z'),
+  ('platform', 'claude-code', 'upsert', '2026-09-29T00:00:00.000Z'),
+  ('platform', 'codex',       'upsert', '2026-09-29T00:00:00.000Z'),
+  ('platform', 'cursor',      'upsert', '2026-09-29T00:00:00.000Z'),
+  ('platform', 'claude-app',  'upsert', '2026-09-29T00:00:00.000Z'),
+  ('platform', 'chatgpt',     'upsert', '2026-09-29T00:00:00.000Z'),
+  ('platform', 'general',     'upsert', '2026-09-29T00:00:00.000Z'),
+  ('setting', 'rules',        'upsert', '2026-09-29T00:00:00.000Z');
+
 -- 整理规则默认内容（见 docs/detailed/07-mcp-scanner.md#整理规则）
 INSERT INTO settings (key, value, updated_at) VALUES
   ('rules', '- 名称用官方名称；标识用小写英文、数字和连字符，与官方名称一致。

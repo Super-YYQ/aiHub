@@ -23,5 +23,8 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    // E2E 便于阅读报错；上线可按需改回默认压缩
+    minify: process.env.E2E_DEBUG ? false : undefined,
+    sourcemap: !!process.env.E2E_DEBUG,
   },
 });

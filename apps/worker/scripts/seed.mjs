@@ -59,8 +59,8 @@ function wranglerExecute(sql) {
 
 const stmts = [];
 for (const s of seed.stacks) {
-  stmts.push(`INSERT INTO stacks (id, name, kind, os, description, sort, created_at, updated_at, deleted_at)
-       SELECT ${lit(s.id)}, ${lit(s.name)}, ${lit(s.kind)}, ${lit(s.os)}, ${lit(s.description)}, ${lit(s.sort)}, ${lit(s.createdAt)}, ${lit(s.updatedAt)}, NULL
+  stmts.push(`INSERT INTO stacks (id, name, kind, os, description, sort, version, created_at, updated_at, deleted_at)
+       SELECT ${lit(s.id)}, ${lit(s.name)}, ${lit(s.kind)}, ${lit(s.os)}, ${lit(s.description)}, ${lit(s.sort)}, 1, ${lit(s.createdAt)}, ${lit(s.updatedAt)}, NULL
        WHERE NOT EXISTS (SELECT 1 FROM stacks WHERE id = ${lit(s.id)});`);
 }
 for (const e of seed.entries) {
@@ -75,6 +75,15 @@ for (const e of seed.entries) {
          WHERE NOT EXISTS (SELECT 1 FROM stack_entries WHERE stack_id = ${lit(ref.id)} AND entry_id = ${lit(e.id)});`);
   }
 }
+// 同步可见：为已落库的种子实体补 change_log（幂等：已记录过的不再重复）。
+stmts.push(`INSERT INTO change_log (entity, entity_id, op, at)
+     SELECT 'entry', id, 'upsert', created_at FROM entries
+     WHERE id IN (${seed.entries.map((e) => lit(e.id)).join(',')})
+       AND id NOT IN (SELECT entity_id FROM change_log WHERE entity = 'entry');`);
+stmts.push(`INSERT INTO change_log (entity, entity_id, op, at)
+     SELECT 'stack', id, 'upsert', created_at FROM stacks
+     WHERE id IN (${seed.stacks.map((s) => lit(s.id)).join(',')})
+       AND id NOT IN (SELECT entity_id FROM change_log WHERE entity = 'stack');`);
 
 wranglerExecute(stmts.join('\n'));
 console.log(
