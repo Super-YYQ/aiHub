@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ai-kit-test",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-29",
+  "workers_dev": false,
+  "assets": {
+    "directory": "../web/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/mcp", "/mcp/*"],
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ai-kit",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "ACCESS_TEAM_DOMAIN": "https://test-team.cloudflareaccess.com",
+    "ACCESS_AUD": "test-aud-tag",
+    "ALLOWED_EMAILS": "owner@example.com",
+    "SERVICE_TOKEN_ROLES": "{\"test-agent-client-id\":\"agent\",\"test-capture-client-id\":\"capture\",\"test-backup-client-id\":\"backup\"}",
+  },
+}

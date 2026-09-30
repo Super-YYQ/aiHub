@@ -4,7 +4,7 @@
 
 ## 当前
 
-- 🟡 WP3 鉴权中间件
+- 🟡 WP4 条目/环境/字典/设置接口
 
 ## 明细
 
@@ -12,9 +12,9 @@
 | ------- | ---- | ------------------------------------------------------------------------------------ |
 | WP0     | ✅   | workspace/lint/typecheck/test/build 全绿；wrangler dev /api/health→{ok:true,db:true} |
 | WP1     | ✅   | shared 全量：schema(105 测试)/密钥扫描/搜索/变量/capture/markdown/清单/原型转换 全绿 |
-| WP2     | ✅   | 迁移+种子(21/3)+Drizzle 表+迁移测试 6/6；本地库实测 slug 唯一/重用/外键             |
-| WP3     | 🟡   | JWT 校验/角色/权限/本地开发身份                                                     |
-| WP4     | ⬜   |                                                                                      |
+| WP2     | ✅   | 迁移+种子(21/3)+Drizzle 表+迁移测试 6/6；本地库实测 slug 唯一/重用/外键              |
+| WP3     | 🟡   | JWT 校验/角色/权限/本地开发身份                                                      |
+| WP4     | 🟡   | 条目 CRUD/修订/恢复、环境、字典、标签、设置                                          |
 | WP5     | ⬜   |                                                                                      |
 | WP6     | ⬜   |                                                                                      |
 | WP7     | ⬜   |                                                                                      |
@@ -37,3 +37,4 @@
 - 平台 win32，shell bash
 - pnpm install 网络可用（taobao 镜像）；onlyBuiltDependencies 已允许 esbuild/workerd/sharp/vue-demi
 - WP2: 迁移测试 6/6 ✅（内置字典/默认规则/slug 唯一/删除后重用/环境名唯一/外键）；本地 D1 实测 seed 21 条目/3 环境/21 成员，重复 seed 不重复插入；typecheck/lint/format 全绿
+- WP3: worker 测试 20/20（含迁移 6）✅；鉴权验收全覆盖：缺 JWT/过期/错 aud/坏签名→401，邮箱不在白名单/未知服务令牌→403，backup/capture/agent 表外→403，production+DEV_AUTH_EMAIL 不旁路
