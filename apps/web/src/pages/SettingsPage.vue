@@ -73,8 +73,8 @@ async function doImport() {
     );
     importFile.value = null;
     importPreview.value = null;
-    const { sync } = await import('../lib/sync');
-    await sync();
+    const { syncSoon } = await import('../lib/sync');
+    await syncSoon();
     await Promise.all([entries.refresh(), stacks.refresh()]);
   } catch (err) {
     ui.showToast((err as Error).message || '导入失败');

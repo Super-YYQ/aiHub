@@ -4,7 +4,7 @@ import { reactive, ref } from 'vue';
 import { useDictionariesStore, useEntriesStore } from '../stores/data';
 import { useUiStore } from '../stores/ui';
 import { api } from '../lib/api';
-import { sync } from '../lib/sync';
+import { syncSoon } from '../lib/sync';
 
 const dicts = useDictionariesStore();
 const entries = useEntriesStore();
@@ -57,7 +57,7 @@ async function create() {
     creating.id = '';
     creating.name = '';
     creating.fieldTemplate = '';
-    await sync();
+    await syncSoon();
     await dicts.load();
   } catch (err) {
     error.value = (err as { message?: string }).message ?? '新建失败';
@@ -75,7 +75,7 @@ async function saveType(
       body: JSON.stringify(patch),
     });
     ui.showToast('已保存');
-    await sync();
+    await syncSoon();
     await dicts.load();
   } catch (err) {
     ui.showToast((err as { message?: string }).message ?? '保存失败');
@@ -84,12 +84,16 @@ async function saveType(
 
 async function removeType(id: string) {
   try {
-    await fetch(`/api/types/${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/types/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+      throw new Error(body?.error?.message ?? `删除失败（${res.status}）`);
+    }
     ui.showToast('已删除类型');
-    await sync();
+    await syncSoon();
     await dicts.load();
   } catch (err) {
-    ui.showToast((err as { message?: string }).message ?? '删除失败');
+    ui.showToast((err as Error).message ?? '删除失败');
   }
 }
 </script>

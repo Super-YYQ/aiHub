@@ -3,7 +3,7 @@
 import { computed, ref } from 'vue';
 import { useEntriesStore } from '../stores/data';
 import { useUiStore } from '../stores/ui';
-import { sync } from '../lib/sync';
+import { syncSoon } from '../lib/sync';
 
 const entries = useEntriesStore();
 const ui = useUiStore();
@@ -39,7 +39,7 @@ async function applyRename() {
     if (!res.ok) throw new Error(result.error?.message ?? String(res.status));
     ui.showToast(`已把“${from}”改名/合并到“${to.trim()}”（${result.renamed} 个条目）`);
     renaming.value = null;
-    await sync();
+    await syncSoon();
     await entries.refresh();
   } catch (err) {
     ui.showToast((err as Error).message ?? '改名失败');

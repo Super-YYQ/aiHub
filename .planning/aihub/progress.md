@@ -4,7 +4,7 @@
 
 ## 当前
 
-- 🟡 WP13 手机快捷指令与 Android 分享
+- 🟡 WP14 提案：后端与待确认页
 
 ## 明细
 
@@ -22,10 +22,11 @@
 | WP8     | 🟡   | manifest、Service Worker、新版本提示、主题色跟随                                     |
 | WP9     | 🟡   | deploy.yml 可自动做；建库/域名/Access/Secrets 见 PENDING-MANUAL                      |
 | WP10    | ✅   | check-export/to-markdown + backup.yml；5 测试全绿；凭据/实跑见 PENDING-MANUAL        |
-| WP11    | ✅   | 抽屉列出修订、选中对比（字段+笔记逐行）、恢复生成新版本且旧版本保留；E2E 全过       |
+| WP11    | ✅   | 抽屉列出修订、选中对比（字段+笔记逐行）、恢复生成新版本且旧版本保留；E2E 全过        |
 | WP12    | ✅   | 类型/平台/标签管理已在 WP7 一并实现                                                  |
-| WP13    | 🟡   | iOS 快捷指令说明 + manifest share_target；真机验证见 PENDING-MANUAL                  |
-| WP14-15 | ⬜   | 提案后端+待确认页；MCP 端点+数据收集规则                                             |
+| WP13    | ✅   | manifest share_target+分享参数预填面板（E2E 双视口）+ iOS 快捷指令文档               |
+| WP14    | 🟡   | 四种提案创建/接受/拒绝、过期冲突、批量                                                |
+| WP15    | ⬜   | MCP 端点 + 数据收集规则                                                               |
 
 ## 验证记录
 
@@ -50,3 +51,5 @@
 - WP9: deploy.yml（构建→wrangler d1 migrations --remote→wrangler deploy→冒烟）；实际部署步骤全部在 PENDING-MANUAL
 - WP10: tools/backup 5 测试全绿（check-export 闸门/schemaVersion/确定性两次逐字节相同/YAML 头+安装命令）；backup.yml 修正步骤顺序（先检出数据仓库再写入）
 - WP11: E2E ✅（修改三次→3 旧版本；v1 对比当前含说明/笔记逐行差异；恢复 v3 生成 v5，旧版本仍在，详情显示恢复后内容）
+- WP12: 类型/平台/标签管理页验收 E2E ✅（新建类型→条目出现、删除被引用类型提示原因、标签合并、规则保存回读）；关键修复：管理页直接写库后 syncSoon（等在途同步再拉）、删除的 res.ok 检查（409 原因现在能显示）
+- WP13: share_target 预填 E2E 双视口 ✅；分享判定改为 url/text（不再被编辑页 ?title= 预填误触发）；iOS 快捷指令配置文档 docs/shortcuts.md

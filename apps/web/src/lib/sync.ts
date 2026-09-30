@@ -196,6 +196,24 @@ function scheduleRetry(delayMs: number) {
   }, delayMs);
 }
 
+/** 等待正在进行的同步结束后，再执行一次拉取。 */
+export async function syncSoon(): Promise<void> {
+  if (!inFlight) {
+    await sync();
+    return;
+  }
+  await new Promise<void>((resolve) => {
+    const stop = onSyncState((status) => {
+      if (status === 'idle' || status === 'offline') {
+        stop();
+        setTimeout(() => {
+          void sync().finally(resolve);
+        }, 50);
+      }
+    });
+  });
+}
+
 /** 一次完整同步：Web Locks 保证同一时间只有一个标签页在同步。 */
 export async function sync(): Promise<void> {
   if (inFlight) return;

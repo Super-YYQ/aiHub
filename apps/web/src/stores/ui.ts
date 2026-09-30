@@ -42,6 +42,7 @@ export const useUiStore = defineStore('ui', {
       appearanceOpen: false,
       conflictOpen: false,
       updateReady: false,
+      sharePrefill: null as { title: string; text: string; url: string } | null,
     };
   },
   actions: {

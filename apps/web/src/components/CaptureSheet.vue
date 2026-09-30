@@ -18,6 +18,12 @@ const textarea = ref<HTMLTextAreaElement | null>(null);
 const lastFocus = document.activeElement as HTMLElement | null;
 
 onMounted(() => {
+  // Android 分享进入（PWA share_target）：预填标题/文本/链接（04-frontend#PWA）
+  if (ui.sharePrefill) {
+    const { title, text: sharedText, url } = ui.sharePrefill;
+    text.value = [title, sharedText, url].filter(Boolean).join('\n');
+    ui.sharePrefill = null;
+  }
   setTimeout(() => textarea.value?.focus(), 60);
   document.addEventListener('keydown', onKey);
 });

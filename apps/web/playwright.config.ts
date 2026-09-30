@@ -6,6 +6,9 @@ export default defineConfig({
   testDir: './e2e',
   timeout: 60_000,
   retries: process.env.CI ? 1 : 0,
+  // 测试共享同一个本地 D1（模拟单用户），并行会互相改数据 → 串行执行
+  fullyParallel: false,
+  workers: 1,
   reporter: process.env.CI ? 'line' : 'list',
   use: {
     baseURL: 'http://127.0.0.1:8787',

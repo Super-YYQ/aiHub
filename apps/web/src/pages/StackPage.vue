@@ -7,7 +7,7 @@ import { useStacksStore, useEntriesStore, useDictionariesStore } from '../stores
 import { useUiStore } from '../stores/ui';
 import { statusName } from '../lib/display';
 import { api } from '../lib/api';
-import { sync } from '../lib/sync';
+import { syncSoon } from '../lib/sync';
 
 const route = useRoute();
 const stacks = useStacksStore();
@@ -73,7 +73,7 @@ async function confirmAdd() {
   ui.showToast(`已加入 ${add.length} 个条目`);
   pickerOpen.value = false;
   await entries.refresh();
-  void sync();
+  void syncSoon();
   await entries.refresh();
 }
 
@@ -81,7 +81,7 @@ async function removeMember(entryId: string) {
   const e = entries.byId(entryId);
   await stacks.setEntries(id.value, { add: [], remove: [entryId] });
   ui.showToast(`已从环境移出“${e?.title ?? '条目'}”`);
-  void sync();
+  void syncSoon();
   await entries.refresh();
 }
 

@@ -72,8 +72,8 @@ async function save() {
       ui.showToast('已新建环境');
       router.push(`/stacks/${created.data.id}`);
     }
-    const { sync } = await import('../lib/sync');
-    await sync();
+    const { syncSoon } = await import('../lib/sync');
+    await syncSoon();
     await stacks.refresh();
   } catch (err) {
     const e = err as { message?: string };
@@ -90,8 +90,8 @@ async function remove() {
   });
   ui.showToast('已删除环境');
   router.push('/stacks');
-  const { sync } = await import('../lib/sync');
-  await sync();
+  const { syncSoon } = await import('../lib/sync');
+  await syncSoon();
   await stacks.refresh();
 }
 </script>

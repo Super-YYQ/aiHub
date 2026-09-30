@@ -4,7 +4,7 @@ import { reactive, ref } from 'vue';
 import { useDictionariesStore, useEntriesStore } from '../stores/data';
 import { useUiStore } from '../stores/ui';
 import { api } from '../lib/api';
-import { sync } from '../lib/sync';
+import { syncSoon } from '../lib/sync';
 
 const dicts = useDictionariesStore();
 const entries = useEntriesStore();
@@ -31,7 +31,7 @@ async function create() {
     ui.showToast(`已新建平台“${creating.name}”`);
     creating.id = '';
     creating.name = '';
-    await sync();
+    await syncSoon();
     await dicts.load();
   } catch (err) {
     error.value = (err as { message?: string }).message ?? '新建失败';
@@ -46,7 +46,7 @@ async function savePlatform(id: string, patch: { name: string; sort: number }) {
       body: JSON.stringify(patch),
     });
     ui.showToast('已保存');
-    await sync();
+    await syncSoon();
     await dicts.load();
   } catch (err) {
     ui.showToast((err as { message?: string }).message ?? '保存失败');
@@ -57,7 +57,7 @@ async function removePlatform(id: string) {
   try {
     await fetch(`/api/platforms/${id}`, { method: 'DELETE' });
     ui.showToast('已删除平台');
-    await sync();
+    await syncSoon();
     await dicts.load();
   } catch (err) {
     ui.showToast((err as { message?: string }).message ?? '删除失败');

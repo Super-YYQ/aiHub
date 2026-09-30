@@ -6,6 +6,11 @@ DELETE FROM stacks;
 DELETE FROM idempotency;
 DELETE FROM revisions;
 
+-- 自定义字典也清掉（内置的保留），保证每次 E2E 运行的初始状态一致；
+-- 不清的话旧的自定义类型还在表里、但日志行没了，同步看不到它们。
+DELETE FROM types WHERE builtin = 0;
+DELETE FROM platforms WHERE builtin = 0;
+
 -- 内置字典与默认规则的变更日志：迁移只在首次应用时写入，重置后补回来，
 -- 否则增量同步看不到 types/platforms，前端字典为空。
 INSERT INTO change_log (entity, entity_id, op, at) VALUES
