@@ -3,15 +3,19 @@ import { securityHeaders } from './middleware/security-headers';
 import { authMiddleware, type AuthAppEnv } from './auth/middleware';
 import { guardRoute } from './auth/guard';
 import { AppError } from './errors';
-
-export type AppEnv = AuthAppEnv;
+import { bodyLimit, readJson, withIdempotency, BODY_LIMIT } from './middleware/idempotency';
+import * as entries from './services/entries';
+import * as stacks from './services/stacks';
+import * as dicts from './services/dictionaries';
+import * as settings from './services/settings';
 
 /**
  * Worker 应用：一个 Hono 实例托管 /api/* 与 /mcp。
  * 其余路径由 Assets（run_worker_first 之外）直接服务，SPA 回退到 index.html。
+ * 路由：guardRoute 从 ROUTE_ROLES 取角色表；成功写响应带 ETag（03-api#约定）。
  */
 export function createApp() {
-  const app = new Hono<{ Bindings: Env } & AppEnv>();
+  const app = new Hono<{ Bindings: Env } & AuthAppEnv>();
 
   app.use('*', securityHeaders());
 
@@ -52,6 +56,7 @@ export function createApp() {
 
   // 其余 /api/* 都要经过鉴权（登录本身由 Access 负责；Worker 再校验一次 JWT）
   app.use('/api/*', authMiddleware());
+  app.use('/api/*', bodyLimit(BODY_LIMIT));
 
   // 当前身份（03-api：全部角色）
   app.get('/api/me', (c) => {
@@ -59,8 +64,236 @@ export function createApp() {
     return c.json({ kind: id.kind, email: id.email, role: id.role });
   });
 
-  // 业务路由（WP4 起逐个实现）：先挂上角色守卫，接口体返回 501。
-  registerStubRoutes(app);
+  const etag = (e: { version: number }) => `"${e.version}"`;
+
+  // ---------- 条目 ----------
+  app.get('/api/entries', guardRoute('GET /api/entries'), async (c) => {
+    const list = await entries.listEntries(c.env.DB, {
+      type: c.req.query('type'),
+      status: c.req.query('status'),
+      stack: c.req.query('stack'),
+    });
+    return c.json(list);
+  });
+
+  app.get('/api/entries/:id', guardRoute('GET /api/entries/:id'), async (c) => {
+    const entry = await entries.getEntry(c.env.DB, c.req.param('id'));
+    if (!entry) throw new AppError('not_found', 404, '条目不存在或已删除');
+    return c.json(entry);
+  });
+
+  app.post('/api/entries', guardRoute('POST /api/entries'), bodyLimit(BODY_LIMIT), async (c) => {
+    const payload = await readJson(c);
+    const idempotencyKey = c.req.header('Idempotency-Key');
+    // 离线新建：id 合法且不存在则直接使用；已存在且幂等键相同 → 上次的响应（见 withIdempotency）
+    const clientEntryId = (payload as { id?: string }).id;
+    if (clientEntryId) {
+      const existing = await entries.getEntry(c.env.DB, clientEntryId);
+      if (existing) {
+        if (idempotencyKey) {
+          const { replayed, value } = await withIdempotency(c.env.DB, idempotencyKey, async () => ({
+            status: 200,
+            body: existing,
+          }));
+          if (replayed || value.status === 200) {
+            return c.json(existing, 200, { ETag: etag(existing) });
+          }
+        }
+        throw new AppError('version_conflict', 409, '这个条目 ID 已经存在，且幂等键不匹配。', [
+          { issue: 'id_taken', current: existing },
+        ]);
+      }
+    }
+    const { value } = await withIdempotency(c.env.DB, idempotencyKey, async () => {
+      const entry = await entries.createEntry(c.env.DB, payload, { id: clientEntryId });
+      return { status: 201, body: entry } as { status: 201; body: typeof entry };
+    });
+    return c.json(value.body, 201, { ETag: etag(value.body as { version: number }) });
+  });
+
+  app.put('/api/entries/:id', guardRoute('PUT /api/entries/:id'), async (c) => {
+    const entry = await entries.updateEntry(
+      c.env.DB,
+      c.req.param('id'),
+      c.req.header('If-Match'),
+      await readJson(c),
+      c.get('identity').actor,
+    );
+    return c.json(entry, 200, { ETag: etag(entry) });
+  });
+
+  app.patch('/api/entries/:id', guardRoute('PATCH /api/entries/:id'), async (c) => {
+    const entry = await entries.patchEntry(
+      c.env.DB,
+      c.req.param('id'),
+      c.req.header('If-Match'),
+      await readJson(c),
+      c.get('identity').actor,
+    );
+    return c.json(entry, 200, { ETag: etag(entry) });
+  });
+
+  app.delete('/api/entries/:id', guardRoute('DELETE /api/entries/:id'), async (c) => {
+    await entries.deleteEntry(
+      c.env.DB,
+      c.req.param('id'),
+      c.req.header('If-Match'),
+      c.get('identity').actor,
+    );
+    return c.body(null, 204);
+  });
+
+  app.get('/api/entries/:id/revisions', guardRoute('GET /api/entries/:id/revisions'), async (c) => {
+    const list = await entries.listRevisions(c.env.DB, c.req.param('id'));
+    return c.json(list);
+  });
+
+  app.get(
+    '/api/entries/:id/revisions/:version',
+    guardRoute('GET /api/entries/:id/revisions/:version'),
+    async (c) => {
+      const snapshot = await entries.getRevision(
+        c.env.DB,
+        c.req.param('id'),
+        Number(c.req.param('version')),
+      );
+      return c.json(snapshot);
+    },
+  );
+
+  app.post('/api/entries/:id/restore', guardRoute('POST /api/entries/:id/restore'), async (c) => {
+    const body = await readJson<{ version?: number }>(c);
+    if (typeof body.version !== 'number')
+      throw new AppError('bad_request', 400, '请求体需要是 { "version": 数字 }');
+    const entry = await entries.restoreEntry(
+      c.env.DB,
+      c.req.param('id'),
+      c.req.header('If-Match'),
+      body.version,
+      c.get('identity').actor,
+    );
+    return c.json(entry, 200, { ETag: etag(entry) });
+  });
+
+  // ---------- 环境 ----------
+  app.get('/api/stacks', guardRoute('GET /api/stacks'), async (c) =>
+    c.json(await stacks.listStacks(c.env.DB)),
+  );
+
+  app.post('/api/stacks', guardRoute('POST /api/stacks'), async (c) => {
+    const stack = await stacks.createStack(c.env.DB, await readJson(c));
+    return c.json(stack, 201, { ETag: etag(stack) });
+  });
+
+  app.put('/api/stacks/:id', guardRoute('PUT /api/stacks/:id'), async (c) => {
+    const stack = await stacks.updateStack(
+      c.env.DB,
+      c.req.param('id'),
+      c.req.header('If-Match'),
+      await readJson(c),
+    );
+    return c.json(stack, 200, { ETag: etag(stack) });
+  });
+
+  app.delete('/api/stacks/:id', guardRoute('DELETE /api/stacks/:id'), async (c) => {
+    await stacks.deleteStack(c.env.DB, c.req.param('id'), c.req.header('If-Match'));
+    return c.body(null, 204);
+  });
+
+  app.put('/api/stacks/:id/entries', guardRoute('PUT /api/stacks/:id/entries'), async (c) => {
+    await stacks.updateStackEntries(c.env.DB, c.req.param('id'), await readJson(c));
+    const stack = await stacks.getStack(c.env.DB, c.req.param('id'));
+    return c.json(stack);
+  });
+
+  app.patch(
+    '/api/stacks/:id/entries/:entryId',
+    guardRoute('PATCH /api/stacks/:id/entries/:entryId'),
+    async (c) => {
+      await stacks.setStackEntryNote(
+        c.env.DB,
+        c.req.param('id'),
+        c.req.param('entryId'),
+        await readJson(c),
+      );
+      return c.json(await stacks.getStack(c.env.DB, c.req.param('id')));
+    },
+  );
+
+  app.get('/api/stacks/:id/checklist', guardRoute('GET /api/stacks/:id/checklist'), async (c) => {
+    const { buildChecklist } = await import('@aikit/shared');
+    const { stack, entries: members } = await stacks.stackMembers(c.env.DB, c.req.param('id'));
+    const types = await dicts.listTypes(c.env.DB);
+    const typeName = (id: string) => types.find((t) => t.id === id)?.name ?? id;
+    const typeOrder = Object.fromEntries(types.map((t) => [t.id, t.sort]));
+    const md = buildChecklist(stack.name, members, { typeName, typeOrder });
+    return c.text(md, 200, { 'content-type': 'text/markdown; charset=utf-8' });
+  });
+
+  // ---------- 类型 / 平台 ----------
+  app.get('/api/types', guardRoute('GET /api/types'), async (c) =>
+    c.json(await dicts.listTypes(c.env.DB)),
+  );
+  app.post('/api/types', guardRoute('POST /api/types'), async (c) => {
+    const body = await readJson<{ id?: string }>(c);
+    if (!body.id) throw new AppError('bad_request', 400, '需要在请求体里提供 id');
+    const type = await dicts.createType(c.env.DB, body.id, body);
+    return c.json(type, 201);
+  });
+  app.put('/api/types/:id', guardRoute('PUT /api/types/:id'), async (c) =>
+    c.json(await dicts.updateType(c.env.DB, c.req.param('id'), await readJson(c))),
+  );
+  app.delete('/api/types/:id', guardRoute('DELETE /api/types/:id'), async (c) => {
+    await dicts.deleteType(c.env.DB, c.req.param('id'));
+    return c.body(null, 204);
+  });
+
+  app.get('/api/platforms', guardRoute('GET /api/platforms'), async (c) =>
+    c.json(await dicts.listPlatforms(c.env.DB)),
+  );
+  app.post('/api/platforms', guardRoute('POST /api/platforms'), async (c) => {
+    const body = await readJson<{ id?: string }>(c);
+    if (!body.id) throw new AppError('bad_request', 400, '需要在请求体里提供 id');
+    const platform = await dicts.createPlatform(c.env.DB, body.id, body);
+    return c.json(platform, 201);
+  });
+  app.put('/api/platforms/:id', guardRoute('PUT /api/platforms/:id'), async (c) =>
+    c.json(await dicts.updatePlatform(c.env.DB, c.req.param('id'), await readJson(c))),
+  );
+  app.delete('/api/platforms/:id', guardRoute('DELETE /api/platforms/:id'), async (c) => {
+    await dicts.deletePlatform(c.env.DB, c.req.param('id'));
+    return c.body(null, 204);
+  });
+
+  // ---------- 设置与标签 ----------
+  app.get('/api/settings/rules', guardRoute('GET /api/settings/rules'), async (c) =>
+    c.json({ value: await settings.getRules(c.env.DB) }),
+  );
+  app.put('/api/settings/rules', guardRoute('PUT /api/settings/rules'), async (c) => {
+    const value = await settings.putRules(c.env.DB, await readJson(c));
+    return c.json({ value });
+  });
+  app.post('/api/tags/rename', guardRoute('POST /api/tags/rename'), async (c) =>
+    c.json(await settings.renameTag(c.env.DB, await readJson(c), c.get('identity').actor)),
+  );
+
+  // ---------- 未实现（WP5/WP14）----------
+  for (const [method, route] of [
+    ['post', '/api/capture'],
+    ['get', '/api/sync'],
+    ['get', '/api/proposals'],
+    ['post', '/api/proposals'],
+    ['post', '/api/proposals/:id/accept'],
+    ['post', '/api/proposals/:id/reject'],
+    ['post', '/api/proposals/bulk'],
+    ['get', '/api/export'],
+    ['post', '/api/import'],
+  ] as const) {
+    const key = `${method.toUpperCase()} ${route}`;
+    app.on(method, route, guardRoute(key), (c) =>
+      c.json({ error: { code: 'not_implemented', message: '这个接口还没有实现' } }, 501),
+    );
+  }
 
   // 未匹配路径：/api 与 /mcp 返回 JSON 404；其余交给静态资源（兜底，正常由 Assets 处理）
   app.notFound((c) => {
@@ -72,57 +305,6 @@ export function createApp() {
   });
 
   return app;
-}
-
-/**
- * 把 ROUTE_ROLES 里的全部路由挂到 app 上：角色守卫先行，handler 暂为 501。
- * WP4/WP5 实现各接口时把 501 handler 替换为真实实现，守卫保持不变。
- */
-function registerStubRoutes(app: Hono<{ Bindings: Env } & AppEnv>) {
-  const stub = (c: { json: (body: unknown, status?: number) => Response }) =>
-    c.json({ error: { code: 'not_implemented', message: '这个接口还没有实现' } }, 501);
-
-  const define = (method: 'get' | 'post' | 'put' | 'patch' | 'delete', route: string) => {
-    const key = `${method.toUpperCase()} ${route}`;
-    app.on(method, route, guardRoute(key), (c) => stub(c));
-  };
-
-  define('get', '/api/entries');
-  define('get', '/api/entries/:id');
-  define('post', '/api/entries');
-  define('put', '/api/entries/:id');
-  define('patch', '/api/entries/:id');
-  define('delete', '/api/entries/:id');
-  define('get', '/api/entries/:id/revisions');
-  define('get', '/api/entries/:id/revisions/:version');
-  define('post', '/api/entries/:id/restore');
-  define('post', '/api/capture');
-  define('get', '/api/stacks');
-  define('post', '/api/stacks');
-  define('put', '/api/stacks/:id');
-  define('delete', '/api/stacks/:id');
-  define('put', '/api/stacks/:id/entries');
-  define('patch', '/api/stacks/:id/entries/:entryId');
-  define('get', '/api/stacks/:id/checklist');
-  define('get', '/api/types');
-  define('post', '/api/types');
-  define('put', '/api/types/:id');
-  define('delete', '/api/types/:id');
-  define('get', '/api/platforms');
-  define('post', '/api/platforms');
-  define('put', '/api/platforms/:id');
-  define('delete', '/api/platforms/:id');
-  define('get', '/api/settings/rules');
-  define('put', '/api/settings/rules');
-  define('post', '/api/tags/rename');
-  define('get', '/api/sync');
-  define('get', '/api/proposals');
-  define('post', '/api/proposals');
-  define('post', '/api/proposals/:id/accept');
-  define('post', '/api/proposals/:id/reject');
-  define('post', '/api/proposals/bulk');
-  define('get', '/api/export');
-  define('post', '/api/import');
 }
 
 export type App = ReturnType<typeof createApp>;

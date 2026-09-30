@@ -1,4 +1,5 @@
 // 行 ↔ 实体映射：snake_case 列与 camelCase JSON 的转换只发生在这一层（01-architecture#编码约定）。
+// 行形状与 D1 查询结果一致（snake_case）；写入的 SQL 绑定在各服务里组装。
 import type {
   Entry,
   StoredSnippet,
@@ -8,12 +9,58 @@ import type {
   PlatformDict,
   Stack,
 } from '@aikit/shared';
-import type * as t from './schema';
 
-type EntryRow = typeof t.entries.$inferSelect;
-type StackRow = typeof t.stacks.$inferSelect;
-type TypeRow = typeof t.types.$inferSelect;
-type PlatformRow = typeof t.platforms.$inferSelect;
+export interface EntryRow {
+  id: string;
+  type: string;
+  slug: string;
+  title: string;
+  summary: string;
+  status: string;
+  pinned: number;
+  rating: number;
+  platforms: string;
+  tags: string;
+  fields: string;
+  snippets: string;
+  links: string;
+  body: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface StackRow {
+  id: string;
+  name: string;
+  kind: string;
+  os: string;
+  description: string;
+  sort: number;
+  version: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface TypeRow {
+  id: string;
+  name: string;
+  color: string;
+  field_template: string;
+  sort: number;
+  builtin: number;
+  updated_at: string;
+}
+
+export interface PlatformRow {
+  id: string;
+  name: string;
+  sort: number;
+  builtin: number;
+  updated_at: string;
+}
 
 // 旧数据里的片段可能缺 id（列以 JSON 存储），读取时补一个稳定值。
 function withSnippetIds(snippets: StoredSnippet[]): StoredSnippet[] {
@@ -45,32 +92,9 @@ export function rowToEntry(row: EntryRow, stacks: StackRef[] = []): Entry {
     body: row.body,
     stacks,
     version: row.version,
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-    deletedAt: row.deletedAt,
-  };
-}
-
-export function entryToRow(e: Entry): EntryRow {
-  return {
-    id: e.id,
-    type: e.type,
-    slug: e.slug,
-    title: e.title,
-    summary: e.summary,
-    status: e.status,
-    pinned: e.pinned ? 1 : 0,
-    rating: e.rating,
-    platforms: JSON.stringify(e.platforms),
-    tags: JSON.stringify(e.tags),
-    fields: JSON.stringify(e.fields),
-    snippets: JSON.stringify(e.snippets),
-    links: JSON.stringify(e.links),
-    body: e.body,
-    version: e.version,
-    createdAt: e.createdAt,
-    updatedAt: e.updatedAt,
-    deletedAt: e.deletedAt,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    deletedAt: row.deleted_at,
   };
 }
 
@@ -82,9 +106,10 @@ export function rowToStack(row: StackRow, entryCount = 0): Stack & { entryCount?
     os: row.os as Stack['os'],
     description: row.description,
     sort: row.sort,
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-    deletedAt: row.deletedAt,
+    version: row.version,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    deletedAt: row.deleted_at,
     entryCount,
   };
 }
@@ -94,10 +119,10 @@ export function rowToType(row: TypeRow): TypeDict {
     id: row.id,
     name: row.name,
     color: row.color,
-    fieldTemplate: JSON.parse(row.fieldTemplate) as string[],
+    fieldTemplate: JSON.parse(row.field_template) as string[],
     sort: row.sort,
     builtin: row.builtin === 1,
-    updatedAt: row.updatedAt,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -107,6 +132,6 @@ export function rowToPlatform(row: PlatformRow): PlatformDict {
     name: row.name,
     sort: row.sort,
     builtin: row.builtin === 1,
-    updatedAt: row.updatedAt,
+    updatedAt: row.updated_at,
   };
 }

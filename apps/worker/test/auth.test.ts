@@ -1,6 +1,7 @@
 import { SELF } from 'cloudflare:test';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { devBypassEnabled } from '../src/auth/middleware';
+import { applyInitSql } from './apply-init';
 import jwks from './fixtures/jwks.json';
 import tokens from './fixtures/tokens.json';
 
@@ -13,7 +14,8 @@ const T = tokens.tokens;
 const JWKS_URL = `${tokens.team}/cdn-cgi/access/certs`;
 const originalFetch = globalThis.fetch;
 
-beforeAll(() => {
+beforeAll(async () => {
+  await applyInitSql();
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
     if (url === JWKS_URL) {
@@ -133,7 +135,7 @@ describe('角色映射与按路由权限', () => {
 
   it('agent 只读：GET /api/entries 过，POST /api/entries 拒', async () => {
     const read = await get('/api/entries', T.agent);
-    expect(read.status).toBe(501);
+    expect(read.status).toBe(200); // 空档案也返回 200（WP4 已实现）
     const write = await SELF.fetch('http://localhost/api/entries', {
       method: 'POST',
       headers: { 'content-type': 'application/json', ...auth(T.agent) },

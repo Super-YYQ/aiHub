@@ -181,6 +181,7 @@ export const stackWriteSchema = z.object({
 });
 export const stackSchema = stackWriteSchema.extend({
   id: ulidSchema,
+  version: z.number().int().min(1).default(1),
   createdAt: isoDate,
   updatedAt: isoDate,
   deletedAt: isoDate.nullable().default(null),

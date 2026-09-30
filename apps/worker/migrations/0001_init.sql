@@ -36,6 +36,7 @@ CREATE INDEX idx_entries_updated ON entries (updated_at);
 CREATE TABLE stacks (
   id TEXT PRIMARY KEY, name TEXT NOT NULL, kind TEXT NOT NULL, os TEXT NOT NULL,
   description TEXT NOT NULL DEFAULT '', sort INTEGER NOT NULL DEFAULT 0,
+  version INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL, updated_at TEXT NOT NULL, deleted_at TEXT
 );
 CREATE UNIQUE INDEX uq_stacks_name ON stacks (name) WHERE deleted_at IS NULL;

@@ -52,7 +52,7 @@
 | --- | --- |
 | 类型 | `id`（`^[a-z][a-z0-9-]{1,23}$`）、`name`（1–20 字符）、`color`（`#RRGGBB`）、`fieldTemplate`（string[]，最多 20 项）、`sort`、`builtin` |
 | 平台 | `id`（同上规则）、`name`、`sort`、`builtin` |
-| 环境 | `id`（ULID）、`name`（1–40 字符，唯一）、`kind`（`pc` 电脑、`server` 服务器、`phone` 手机、`tablet` 平板、`scene` 使用场景）、`os`（`windows`、`macos`、`linux`、`ios`、`android`、`any`）、`description`（0–280 字符）、`sort` |
+| 环境 | `id`（ULID）、`name`（1–40 字符，唯一）、`kind`（`pc` 电脑、`server` 服务器、`phone` 手机、`tablet` 平板、`scene` 使用场景）、`os`（`windows`、`macos`、`linux`、`ios`、`android`、`any`）、`description`（0–280 字符）、`sort`、`version`（从 1 开始，每次写入加 1，供 `If-Match` 使用） |
 | 环境成员 | `stackId`、`entryId`、`note`（0–280 字符，记录本环境下的差异，如版本、路径）、`addedAt` |
 
 - 内置类型：`tool` 工具、`prompt` 提示词、`skill` Skill、`mcp` MCP、`hook` Hook、`plugin` 插件、`config` 配置、`model` 模型与 API。内置类型可以改名、改颜色、改字段模板，不能删除。
@@ -111,6 +111,7 @@ CREATE INDEX idx_entries_updated ON entries (updated_at);
 CREATE TABLE stacks (
   id TEXT PRIMARY KEY, name TEXT NOT NULL, kind TEXT NOT NULL, os TEXT NOT NULL,
   description TEXT NOT NULL DEFAULT '', sort INTEGER NOT NULL DEFAULT 0,
+  version INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL, updated_at TEXT NOT NULL, deleted_at TEXT
 );
 CREATE UNIQUE INDEX uq_stacks_name ON stacks (name) WHERE deleted_at IS NULL;

@@ -1,17 +1,12 @@
 import { env } from 'cloudflare:test';
 import { describe, it, expect, beforeAll } from 'vitest';
-import { INIT_SQL } from './init-sql';
+import { applyInitSql } from './apply-init';
 
 // 迁移测试：在空测试库上执行 0001_init.sql 的全部语句（WP2 验收）。
 
 describe('0001_init 迁移', () => {
   beforeAll(async () => {
-    // 逐条执行迁移 SQL（D1 batch 按事务执行）
-    const stmts = INIT_SQL.split(';')
-      .map((s) => s.trim())
-      .filter(Boolean);
-    const batch = stmts.map((sql) => env.DB.prepare(sql));
-    await env.DB.batch(batch);
+    await applyInitSql();
   });
 
   it('空库执行迁移后：8 类型、6 平台、默认整理规则', async () => {

@@ -63,6 +63,7 @@ export const stacks = sqliteTable(
     os: text('os').notNull(),
     description: text('description').notNull().default(''),
     sort: integer('sort').notNull().default(0),
+    version: integer('version').notNull().default(1),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
     deletedAt: text('deleted_at'),
