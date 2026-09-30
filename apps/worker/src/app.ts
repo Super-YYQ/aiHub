@@ -3,11 +3,20 @@ import { securityHeaders } from './middleware/security-headers';
 import { authMiddleware, type AuthAppEnv } from './auth/middleware';
 import { guardRoute } from './auth/guard';
 import { AppError } from './errors';
-import { bodyLimit, readJson, withIdempotency, BODY_LIMIT } from './middleware/idempotency';
+import {
+  bodyLimit,
+  readJson,
+  withIdempotency,
+  BODY_LIMIT,
+  IMPORT_BODY_LIMIT,
+} from './middleware/idempotency';
 import * as entries from './services/entries';
 import * as stacks from './services/stacks';
 import * as dicts from './services/dictionaries';
 import * as settings from './services/settings';
+import * as syncService from './services/sync';
+import * as captureService from './services/capture';
+import * as importExport from './services/import-export';
 
 /**
  * Worker 应用：一个 Hono 实例托管 /api/* 与 /mcp。
@@ -277,17 +286,51 @@ export function createApp() {
     c.json(await settings.renameTag(c.env.DB, await readJson(c), c.get('identity').actor)),
   );
 
-  // ---------- 未实现（WP5/WP14）----------
+  // ---------- 快速记录（幂等）----------
+  app.post('/api/capture', guardRoute('POST /api/capture'), async (c) => {
+    const payload = await readJson(c);
+    const key = c.req.header('Idempotency-Key');
+    const { value } = await withIdempotency(c.env.DB, key, async () => {
+      const entry = await captureService.capture(c.env.DB, payload);
+      return { status: 201 as 201, body: entry };
+    });
+    return c.json(value.body, 201, { ETag: `"${(value.body as { version: number }).version}"` });
+  });
+
+  // ---------- 同步 ----------
+  app.get('/api/sync', guardRoute('GET /api/sync'), async (c) => {
+    const since = Number(c.req.query('since') ?? 0);
+    const limit = Number(c.req.query('limit') ?? 500);
+    if (!Number.isFinite(since) || since < 0)
+      throw new AppError('bad_request', 400, 'since 需要是非负整数。');
+    return c.json(await syncService.sync(c.env.DB, since, limit));
+  });
+
+  // ---------- 导出 / 导入 ----------
+  app.get('/api/export', guardRoute('GET /api/export'), async (c) =>
+    c.json(await importExport.exportAll(c.env.DB)),
+  );
+
+  app.post(
+    '/api/import',
+    guardRoute('POST /api/import'),
+    bodyLimit(IMPORT_BODY_LIMIT),
+    async (c) => {
+      const mode = c.req.query('mode');
+      if (mode !== 'replace' && mode !== 'merge' && mode !== 'prototype')
+        throw new AppError('bad_request', 400, 'mode 需要是 replace、merge 或 prototype。');
+      const result = await importExport.importData(c.env.DB, mode, await readJson(c));
+      return c.json(result);
+    },
+  );
+
+  // ---------- 提案（WP14 实现）----------
   for (const [method, route] of [
-    ['post', '/api/capture'],
-    ['get', '/api/sync'],
     ['get', '/api/proposals'],
     ['post', '/api/proposals'],
     ['post', '/api/proposals/:id/accept'],
     ['post', '/api/proposals/:id/reject'],
     ['post', '/api/proposals/bulk'],
-    ['get', '/api/export'],
-    ['post', '/api/import'],
   ] as const) {
     const key = `${method.toUpperCase()} ${route}`;
     app.on(method, route, guardRoute(key), (c) =>

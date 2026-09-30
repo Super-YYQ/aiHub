@@ -126,8 +126,8 @@ describe('角色映射与按路由权限', () => {
       headers: { 'content-type': 'application/json', ...auth(T.capture) },
       body: JSON.stringify({ type: 'tool', text: 'x' }),
     });
-    // 501 = 过了守卫，接口体在 WP4 实现
-    expect(ok.status).toBe(501);
+    // WP5 已实现：capture 直接成功
+    expect(ok.status).toBe(201);
 
     const denied = await get('/api/entries', T.capture);
     expect(denied.status).toBe(403);
@@ -146,7 +146,7 @@ describe('角色映射与按路由权限', () => {
 
   it('backup 只能 GET /api/export', async () => {
     const allowed = await get('/api/export', T.backup);
-    expect(allowed.status).toBe(501);
+    expect(allowed.status).toBe(200); // WP5 已实现
     const denied = await get('/api/entries', T.backup);
     expect(denied.status).toBe(403);
   });
