@@ -11,3 +11,4 @@ test-results
 *.sql
 worker-configuration.d.ts
 apps/worker/seed/seed.json
+.tmp

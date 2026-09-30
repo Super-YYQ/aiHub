@@ -1,0 +1,37 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# main 分支 CI 通过后部署（06-ops#构建与部署）：构建前端 → 远程迁移 → wrangler deploy
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    needs: []
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
+      - name: Apply remote migrations
+        run: pnpm --filter @aikit/worker exec wrangler d1 migrations apply ai-kit --remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy Worker
+        run: pnpm --filter @aikit/worker exec wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Smoke
+        run: |
+          # 不带令牌的请求应被 Access 拦下（06-ops 冒烟检查）
+          code=$(curl -s -o /dev/null -w '%{http_code}' "${{ secrets.AIKIT_ORIGIN }}/api/health" || true)
+          echo "health status (expect 30x/401 from Access): $code"

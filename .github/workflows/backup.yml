@@ -1,0 +1,54 @@
+name: backup
+
+on:
+  schedule:
+    # 每天 UTC 19:17（北京 03:17），见 06-ops#备份
+    - cron: '17 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # 数据镜像仓库（私有 ai-kit-data）
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.DATA_REPO }} # 如 <你的账号>/ai-kit-data
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+          path: data
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: 构建 shared（to-markdown 依赖 packages/shared 的构建产物）
+        run: pnpm --filter @aikit/shared run build
+
+      - name: 导出并校验
+        run: |
+          curl -fsS "${{ secrets.AIKIT_ORIGIN }}/api/export" \
+            -H "CF-Access-Client-Id: ${{ secrets.CF_ACCESS_CLIENT_ID }}" \
+            -H "CF-Access-Client-Secret: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}" \
+            -o export.json
+          node tools/backup/check-export.mjs export.json
+
+      - name: 生成 Markdown 并提交到数据仓库
+        run: |
+          node tools/backup/to-markdown.mjs export.json out
+          rm -rf data/entries data/stacks
+          cp -r out/entries out/stacks out/README.md data/
+          cp export.json data/
+          cd data
+          git add -A
+          git -c user.name=aikit-bot -c user.email=aikit-bot@users.noreply.github.com commit -m "backup: $(date -u +%F)" || echo "无变化"
+          git push
+
+      - name: 加密并上传坚果云
+        run: |
+          sudo apt-get install -y age
+          age -r "${{ secrets.AGE_RECIPIENT }}" -o snapshot.age export.json
+          curl -fsS -u "${{ secrets.JGY_USER }}:${{ secrets.JGY_APP_PASSWORD }}" \
+            -T snapshot.age "https://dav.jianguoyun.com/dav/ai-kit/snapshots/$(date -u +%F).json.age"

@@ -25,3 +25,4 @@ Thumbs.db
 
 # local D1 / wrangler state
 apps/worker/.wrangler/
+.tmp/
