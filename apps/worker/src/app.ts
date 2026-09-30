@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { securityHeaders } from './middleware/security-headers';
 import { authMiddleware, type AuthAppEnv } from './auth/middleware';
 import { guardRoute } from './auth/guard';
+import { forbidden } from './errors';
 import { AppError } from './errors';
 import {
   bodyLimit,
@@ -64,9 +65,34 @@ export function createApp() {
     return c.json({ ok: true, db });
   });
 
-  // 其余 /api/* 都要经过鉴权（登录本身由 Access 负责；Worker 再校验一次 JWT）
+  // 其余 /api/* 与 /mcp 都要经过鉴权（登录本身由 Access 负责；Worker 再校验一次 JWT）
   app.use('/api/*', authMiddleware());
+  app.use('/mcp', authMiddleware());
+
+  // /mcp 只允许 agent 角色（03-api；backup/capture 等服务令牌一律 403）
+  const guardMcp = async (
+    c: { get: (k: 'identity') => { role: string } | undefined },
+    next: () => Promise<void>,
+  ) => {
+    const identity = c.get('identity');
+    if (!identity || identity.role !== 'agent') throw forbidden();
+    await next();
+  };
   app.use('/api/*', bodyLimit(BODY_LIMIT));
+
+  // MCP 端点（07-mcp-scanner#mcp-端点）：agent 角色专用，无状态 Streamable HTTP
+  app.all(
+    '/mcp',
+    (c, next) => guardMcp(c, next),
+    async (c) => {
+      const identity = c.get('identity');
+      const { createMcpServer } = await import('./mcp/server');
+      const { createMcpHandler } = await import('agents/mcp/server');
+      const server = createMcpServer({ db: c.env.DB, actor: identity.actor });
+      const handler = createMcpHandler(() => server, { route: '/mcp' });
+      return handler(c.req.raw, c.env, c.executionCtx as unknown as ExecutionContext);
+    },
+  );
 
   // 当前身份（03-api：全部角色）
   app.get('/api/me', (c) => {

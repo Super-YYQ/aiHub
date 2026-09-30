@@ -14,9 +14,12 @@
   },
   "dependencies": {
     "@aikit/shared": "workspace:*",
+    "@modelcontextprotocol/server": "^2.2.0",
+    "agents": "^0.24.0",
     "drizzle-orm": "^0.38.3",
     "hono": "^4.6.15",
-    "jose": "^5.9.6"
+    "jose": "^5.9.6",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.22.0",

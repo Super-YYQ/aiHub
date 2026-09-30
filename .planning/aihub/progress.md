@@ -4,7 +4,7 @@
 
 ## 当前
 
-- 🟡 WP15 MCP 端点与数据收集规则
+- ✅ 全部工作包完成
 
 ## 明细
 
@@ -56,3 +56,6 @@
 - WP14: worker 49/49（提案 9 个新测试：四 kind 全走通、update 修订 actor=owner (proposal <id>)、过期 409 details.current、批量 49 成功 1 条带原因、owner 提案 403、密钥 422 不回显）✅
 - WP14 前端：待确认页按 actor 分组、接受/修改后接受（编辑页载入草稿，保存即接受）/拒绝/多选批量；E2E 3/3（X-Dev-Auth 模拟 agent，仅 development 生效）
 - 关键修复：同步始终带 pending 提案（不受分页窗口限制）、本地清已决策提案、分享参数清理不再误删 ?proposal=/?title=
+- WP15: worker 63/63（MCP 14 个新测试）：initialize/tools/list 9 个工具/resources 3 个/prompts 3 个、搜索与安装清单正确（种子）、capture 待整理、propose_change 生成提案不改条目、密钥草稿 isError+可读原因+不回显、get_rules/get_collection_rules、aikit://rules/collection-rules 资源、collect_config 提示词、backup 403
+- 技术核对（按 07 文档要求开发时核对锁定版本）：文档写的 Cloudflare Agents SDK createMcpHandler 实际在 npm agents 包的 agents/mcp/server 导出（别用 agents-sdk/agents-sdk，那是重名占位包）；@modelcontextprotocol/server 2.2.0 要求 Standard Schema（zod 4 或 raw shape），worker 用 zod 4、shared 保持 zod 3 互不影响
+- 测试注意：vitest-pool-workers 的 SELF.fetch 不带 Host 头，createMcpHandler 校验它——测试请求需补 Host
