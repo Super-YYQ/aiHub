@@ -21,6 +21,7 @@ onMounted(() => {
     openSearch: () => (ui.paletteOpen = true),
     openCapture: () => (ui.captureOpen = true),
   });
+  ui.watchUpdate(); // PWA 新版本提示
 });
 onBeforeUnmount(() => stopShortcuts?.());
 
@@ -49,5 +50,48 @@ watch(
     <AppearancePanel v-if="ui.appearanceOpen" @close="ui.appearanceOpen = false" />
     <ConflictDialog v-if="ui.conflictOpen" @close="ui.conflictOpen = false" />
     <Toast v-if="ui.toast" :text="ui.toast.text" />
+    <div v-if="ui.updateReady" class="update-banner" role="status" data-testid="update-banner">
+      <span>有新版本，刷新后生效。</span>
+      <button class="btn btn-sm" type="button" data-testid="update-apply" @click="ui.applyUpdate()">
+        刷新
+      </button>
+      <button
+        class="btn btn-sm"
+        type="button"
+        aria-label="稍后再说"
+        @click="ui.updateReady = false"
+      >
+        稍后
+      </button>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.update-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 76px;
+  z-index: 55;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  box-shadow: 0 10px 30px -12px color-mix(in srgb, var(--ink) 50%, transparent);
+}
+.update-banner .btn {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--bg) 40%, transparent);
+  color: var(--bg);
+}
+@media (min-width: 861px) {
+  .update-banner {
+    bottom: 28px;
+  }
+}
+</style>

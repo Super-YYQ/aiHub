@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f2f4f3" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>AI 工作台</title>
     <script>
       // 首屏在渲染前定外观，避免先显示默认再跳变（见 docs/detailed/08-ui-spec.md#切换与保存）
@@ -29,5 +34,35 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      // 注册 Service Worker（04-frontend#PWA）：新版本提示由应用内的更新横幅显示
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then(function (reg) {
+              // 已在等接管的新版本 → 通知应用显示“有新版本”
+              if (reg.waiting) window.dispatchEvent(new CustomEvent('aikit:update-ready'));
+              reg.addEventListener('updatefound', function () {
+                var next = reg.installing;
+                if (!next) return;
+                next.addEventListener('statechange', function () {
+                  if (next.state === 'installed' && navigator.serviceWorker.controller) {
+                    window.dispatchEvent(new CustomEvent('aikit:update-ready'));
+                  }
+                });
+              });
+            })
+            .catch(function () {
+              /* SW 注册失败不影响使用（本地 http 环境） */
+            });
+          navigator.serviceWorker.addEventListener('message', function (ev) {
+            if (ev.data && ev.data.kind === 'sw-updated') {
+              window.dispatchEvent(new CustomEvent('aikit:update-ready'));
+            }
+          });
+        });
+      }
+    </script>
   </body>
 </html>

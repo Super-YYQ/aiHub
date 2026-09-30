@@ -41,6 +41,7 @@ export const useUiStore = defineStore('ui', {
       captureOpen: false,
       appearanceOpen: false,
       conflictOpen: false,
+      updateReady: false,
     };
   },
   actions: {
@@ -49,6 +50,14 @@ export const useUiStore = defineStore('ui', {
       el.dataset.layout = this.layout;
       el.dataset.style = this.style;
       el.dataset.theme = this.resolvedTheme;
+      // PWA 主题色跟随当前外观的背景色（04-frontend#PWA）
+      const themeColor = this.resolvedTheme === 'dark' ? '#141b22' : '#f2f4f3';
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute(
+          'content',
+          this.style === 'soft' && this.resolvedTheme === 'dark' ? '#151a23' : themeColor,
+        );
     },
     setLayout(layout: LayoutId) {
       this.layout = layout;
@@ -70,6 +79,23 @@ export const useUiStore = defineStore('ui', {
     },
     toggleTheme() {
       this.setThemePref(this.resolvedTheme === 'dark' ? 'light' : 'dark');
+    },
+    // PWA：新版本已就绪 → 显示“有新版本，刷新后生效”（04-frontend#PWA）
+    watchUpdate() {
+      window.addEventListener('aikit:update-ready', () => {
+        this.updateReady = true;
+      });
+    },
+    async applyUpdate() {
+      this.updateReady = false;
+      // 通知等待中的新版本接管；接管消息到达后刷新
+      try {
+        const reg = await navigator.serviceWorker?.getRegistration();
+        reg?.waiting?.postMessage({ kind: 'skip-waiting' });
+      } catch {
+        /* 无 SW 时直接走下面的兜底刷新 */
+      }
+      setTimeout(() => location.reload(), 800);
     },
     watchSync() {
       onSyncState((status, at) => {

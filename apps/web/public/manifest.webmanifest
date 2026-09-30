@@ -1,0 +1,27 @@
+{
+  "name": "AI 工作台",
+  "short_name": "AI 工作台",
+  "description": "记录和查看自己的 AI 工作环境：工具、提示词、Skill、MCP、Hook、插件和配置。",
+  "lang": "zh-CN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f2f4f3",
+  "theme_color": "#f2f4f3",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    {
+      "src": "/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    { "name": "工作台", "url": "/" },
+    { "name": "待整理", "url": "/list/inbox" },
+    { "name": "环境", "url": "/stacks" }
+  ]
+}
