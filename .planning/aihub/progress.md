@@ -4,7 +4,7 @@
 
 ## 当前
 
-- 🟡 WP11 历史版本界面
+- 🟡 WP13 手机快捷指令与 Android 分享
 
 ## 明细
 
@@ -21,10 +21,11 @@
 | WP7A-D  | 🟡   | 卡片墙/搜索优先/看板/知识库                                                          |
 | WP8     | 🟡   | manifest、Service Worker、新版本提示、主题色跟随                                     |
 | WP9     | 🟡   | deploy.yml 可自动做；建库/域名/Access/Secrets 见 PENDING-MANUAL                      |
-| WP10    | ✅   | check-export/to-markdown + backup.yml；5 测试全绿；凭据/实跑见 PENDING-MANUAL     |
-| WP11    | 🟡   | 历史抽屉：列表+对比+恢复                                                             |
-| WP12    | ✅   | 类型/平台/标签管理已在 WP7 一并实现                                                   |
-| WP13-15 | ⬜   |                                                                                      |
+| WP10    | ✅   | check-export/to-markdown + backup.yml；5 测试全绿；凭据/实跑见 PENDING-MANUAL        |
+| WP11    | ✅   | 抽屉列出修订、选中对比（字段+笔记逐行）、恢复生成新版本且旧版本保留；E2E 全过       |
+| WP12    | ✅   | 类型/平台/标签管理已在 WP7 一并实现                                                  |
+| WP13    | 🟡   | iOS 快捷指令说明 + manifest share_target；真机验证见 PENDING-MANUAL                  |
+| WP14-15 | ⬜   | 提案后端+待确认页；MCP 端点+数据收集规则                                             |
 
 ## 验证记录
 
@@ -48,3 +49,4 @@
 - WP8: PWA E2E 4/4 ✅（manifest 字段/图标/SW 预缓存+断网可开可搜/更新横幅）；SW 兜底仅限导航（JS 失败不返回 HTML 的 MIME 修复）；真机添加主屏见 PENDING-MANUAL
 - WP9: deploy.yml（构建→wrangler d1 migrations --remote→wrangler deploy→冒烟）；实际部署步骤全部在 PENDING-MANUAL
 - WP10: tools/backup 5 测试全绿（check-export 闸门/schemaVersion/确定性两次逐字节相同/YAML 头+安装命令）；backup.yml 修正步骤顺序（先检出数据仓库再写入）
+- WP11: E2E ✅（修改三次→3 旧版本；v1 对比当前含说明/笔记逐行差异；恢复 v3 生成 v5，旧版本仍在，详情显示恢复后内容）
