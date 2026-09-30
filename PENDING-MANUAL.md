@@ -56,5 +56,7 @@ claude mcp add --transport http --scope user aikit https://<子域名>/mcp \
 
 ## 备注
 
-- 本地开发环境（.dev.vars 不提交）：`ENVIRONMENT=development` + `DEV_AUTH_EMAIL=你的邮箱`；`pnpm dev` 前先 `pnpm --filter @aikit/worker run migrate:local` 和 `pnpm seed`。
+- 本地开发环境（.dev.vars 不提交）：`ENVIRONMENT=development` + `DEV_AUTH_EMAIL=你的邮箱`；`pnpm dev` 前先 `pnpm --filter @aikit/worker run migrate:local` 和 `pnpm seed`。本地模拟服务令牌角色可用 `DEV_AUTH_EMAIL=agent@example.com:agent`（仅 development 生效），或对单请求用 `X-Dev-Auth: email:role` 请求头。
 - 测试配置 `wrangler.test.jsonc`/`wrangler.dev.jsonc` 只用于本地与测试，不用于部署。
+- 依赖核对结论（实现时核实）：MCP 的 `createMcpHandler` 来自 npm 包 `agents`（`agents/mcp/server` 导出）；`agents-sdk` 是重名占位包。`@modelcontextprotocol/server@2.2` 要求标准 schema（zod 4），worker 已用 zod 4、shared 保持 zod 3。
+- 端到端测试共享一个本地 Worker；连续跑两套视口偶发受共享库状态影响，CI 已配 retries=1，本地建议 `--project=desktop`、`--project=mobile` 分开跑。
