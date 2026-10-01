@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { STATUSES, STATUS_NAMES } from '@aikit/shared';
 import { useEntriesStore, useStacksStore, useDictionariesStore } from '../../stores/data';
 import { useUiStore } from '../../stores/ui';
-import { statusName } from '../../lib/display';
+import { statusName, sortPinnedFirst } from '../../lib/display';
 import DetailDrawer from '../../components/DetailDrawer.vue';
 
 const route = useRoute();
@@ -47,9 +47,13 @@ const columns = computed<Column[]>(() => {
       ...stacks.stacks.map((s) => ({
         key: `stack-${s.id}`,
         name: s.name,
-        items: list.value.filter((e) => e.stacks.some((r) => r.id === s.id)),
+        items: sortPinnedFirst(list.value.filter((e) => e.stacks.some((r) => r.id === s.id))),
       })),
-      { key: 'stack-none', name: '未加入环境', items: list.value.filter((e) => !e.stacks.length) },
+      {
+        key: 'stack-none',
+        name: '未加入环境',
+        items: sortPinnedFirst(list.value.filter((e) => !e.stacks.length)),
+      },
     ];
   }
   if (group.value === 'type') {
@@ -57,14 +61,14 @@ const columns = computed<Column[]>(() => {
       key: `type-${t.id}`,
       name: t.name,
       type: t.id,
-      items: list.value.filter((e) => e.type === t.id),
+      items: sortPinnedFirst(list.value.filter((e) => e.type === t.id)),
     }));
   }
   return STATUSES.map((s) => ({
     key: `status-${s}`,
     name: STATUS_NAMES[s],
     status: s,
-    items: list.value.filter((e) => e.status === s),
+    items: sortPinnedFirst(list.value.filter((e) => e.status === s)),
   }));
 });
 

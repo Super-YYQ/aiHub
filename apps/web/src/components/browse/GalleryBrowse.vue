@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { parseVariables, applyVariables, STATUSES } from '@aikit/shared';
 import { useEntriesStore, useDictionariesStore } from '../../stores/data';
 import { useUiStore } from '../../stores/ui';
-import { scopeEntries, statusName } from '../../lib/display';
+import { scopeEntries, statusName, sortPinnedFirst } from '../../lib/display';
 import TypeTabs from '../../components/TypeTabs.vue';
 import FilterBar from '../../components/FilterBar.vue';
 import DetailDrawer from '../../components/DetailDrawer.vue';
@@ -35,7 +35,7 @@ const list = computed(() => {
 const groups = computed(() => {
   const all = dicts.types;
   return all
-    .map((t) => ({ t, items: list.value.filter((e) => e.type === t.id) }))
+    .map((t) => ({ t, items: sortPinnedFirst(list.value.filter((e) => e.type === t.id)) }))
     .filter((g) => g.items.length);
 });
 

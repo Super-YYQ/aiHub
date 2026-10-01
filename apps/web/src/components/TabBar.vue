@@ -33,16 +33,16 @@ function tab(name: unknown): string | undefined {
   <nav class="tabbar" aria-label="底部导航">
     <router-link to="/" :aria-current="tab(route.name) === 'home' ? 'page' : undefined">
       <span class="icon">⌂</span>工作台
-</router-link>
+    </router-link>
     <router-link to="/list/all" :aria-current="tab(route.name) === 'list' ? 'page' : undefined">
       <span class="icon">☰</span>条目
-</router-link>
+    </router-link>
     <button type="button" class="add" aria-label="记一笔" @click="$emit('capture')">
       <span class="icon">＋</span>记录
     </button>
     <button type="button" @click="$emit('search')"><span class="icon">⌕</span>搜索</button>
     <router-link to="/stacks" :aria-current="tab(route.name) === 'stacks' ? 'page' : undefined">
       <span class="icon">▤</span>环境
-</router-link>
+    </router-link>
   </nav>
 </template>

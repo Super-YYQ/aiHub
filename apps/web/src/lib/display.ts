@@ -30,3 +30,10 @@ export function scopeName(scope: string, typeName: (id: string) => string): stri
   if ((STATUSES as readonly string[]).includes(scope)) return statusName(scope);
   return typeName(scope);
 }
+
+/** 置顶条目排在前面 */
+export function sortPinnedFirst<T extends { pinned?: boolean }>(entries: T[]): T[] {
+  const pinned = entries.filter((e) => e.pinned);
+  const rest = entries.filter((e) => !e.pinned);
+  return [...pinned, ...rest];
+}

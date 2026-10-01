@@ -117,8 +117,8 @@ function onSearchKey(ev: KeyboardEvent) {
     <div class="l-meta">
       <TypeTabs />
       <router-link v-if="inboxCount" class="chip" to="/list/inbox">
-待整理 {{ inboxCount }}
-</router-link>
+        待整理 {{ inboxCount }}
+      </router-link>
     </div>
     <div class="l-body">
       <ul class="l-results" role="listbox" aria-label="搜索结果" data-testid="launcher-results">

@@ -266,7 +266,7 @@ const statusText = computed(() => {
         <p v-if="importPreview" class="hint">
           将导入 {{ importPreview.imported }} 条数据。<template v-if="importMode === 'replace'">
             当前全部数据会被覆盖，建议先导出。
-</template>
+          </template>
         </p>
       </div>
     </section>

@@ -59,3 +59,14 @@
 - WP15: worker 63/63（MCP 14 个新测试）：initialize/tools/list 9 个工具/resources 3 个/prompts 3 个、搜索与安装清单正确（种子）、capture 待整理、propose_change 生成提案不改条目、密钥草稿 isError+可读原因+不回显、get_rules/get_collection_rules、aikit://rules/collection-rules 资源、collect_config 提示词、backup 403
 - 技术核对（按 07 文档要求开发时核对锁定版本）：文档写的 Cloudflare Agents SDK createMcpHandler 实际在 npm agents 包的 agents/mcp/server 导出（别用 agents-sdk/agents-sdk，那是重名占位包）；@modelcontextprotocol/server 2.2.0 要求 Standard Schema（zod 4 或 raw shape），worker 用 zod 4、shared 保持 zod 3 互不影响
 - 测试注意：vitest-pool-workers 的 SELF.fetch 不带 Host 头，createMcpHandler 校验它——测试请求需补 Host
+
+## 复查修复（2026-10-01）
+
+- E2E 全绿（50 用例 desktop+mobile 双视口）。根因：8787 端口被多个手动 `pnpm dev`（生产配置，API 全 401）残留进程占用，Playwright reuseExistingServer 复用了错误服务器 → 数据同步永不完成。修复：清进程树；Playwright 必须让它自己启动 dev-e2e.mjs（wrangler.dev.jsonc：development+种子+免登录）。
+- e2e/helpers.ts（新增）：waitForDataSync() 等待 `.row, .l-item, .card, .bcard, .tree-leaf` 任一可见，覆盖五种布局的数据渲染完成信号，替代各测试里零散的固定等待。
+- dictionaries.spec.ts：标签合并断言从易碎的 toast 文本改为验证结果（改名输入框消失+源标签计数为 0）；用唯一前缀隔离共享 D1 的多测试数据；先 goto('/') 触发 syncSoon 再断言。
+- pwa.spec.ts：移动端 `.rail` 隐藏（≤860px）→ 按视口宽选 `.rail`/`.tabbar`；IndexedDB 检查加超时保护。
+- core.spec.ts：编辑保存后 waitForURL 到详情页再断言 heading。
+- layouts.spec.ts：置顶分组断言改精确 testid（gallery-group-plugin，避免“插件”文本在多组命中 strict mode）；看板列数断言改 >=（共享库可能有自定义类型）；分组切换加 500ms 重渲染等待。
+- display.ts 新增 sortPinnedFirst()：Gallery/Docs/Board 三视图置顶条目排组内最前（Launcher 原有置顶逻辑保持）。
+- 回滚了复查期间的错误尝试：panes→list 重命名（panes 本就是正确 ID）、browseMode getter、第二 webServer、__syncComplete 标志、两份不实的总结文档。

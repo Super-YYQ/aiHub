@@ -57,6 +57,8 @@ claude mcp add --transport http --scope user aikit https://<子域名>/mcp \
 ## 备注
 
 - 本地开发环境（.dev.vars 不提交）：`ENVIRONMENT=development` + `DEV_AUTH_EMAIL=你的邮箱`；`pnpm dev` 前先 `pnpm --filter @aikit/worker run migrate:local` 和 `pnpm seed`。本地模拟服务令牌角色可用 `DEV_AUTH_EMAIL=agent@example.com:agent`（仅 development 生效），或对单请求用 `X-Dev-Auth: email:role` 请求头。
+- **跑 E2E 前先清 8787 端口**：`netstat -ano | findstr :8787` 有 LISTENING 就把对应进程树杀掉（`taskkill /F /T /PID <pid>`）。手动 `pnpm dev`（生产配置）残留进程会让 Playwright 的 `reuseExistingServer` 复用到错误服务器，表现为大面积"元素找不到"——此前 E2E 全挂的唯一根因就是它。E2E 应由 Playwright 自己启动 `node ../worker/scripts/dev-e2e.mjs`（development + 种子 + 免登录）。
+- **不要提交 `.dev.vars`**：vitest-pool-workers 会把它加载进测试环境，`DEV_AUTH_EMAIL` 会启用鉴权旁路，让全部鉴权测试（401/403 断言）失败。本地开发用 `wrangler.dev.jsonc` 里的 `DEV_AUTH_EMAIL` 变量即可，无需 `.dev.vars`。
 - 测试配置 `wrangler.test.jsonc`/`wrangler.dev.jsonc` 只用于本地与测试，不用于部署。
 - 依赖核对结论（实现时核实）：MCP 的 `createMcpHandler` 来自 npm 包 `agents`（`agents/mcp/server` 导出）；`agents-sdk` 是重名占位包。`@modelcontextprotocol/server@2.2` 要求标准 schema（zod 4），worker 已用 zod 4、shared 保持 zod 3。
 - 端到端测试共享一个本地 Worker；连续跑两套视口偶发受共享库状态影响，CI 已配 retries=1，本地建议 `--project=desktop`、`--project=mobile` 分开跑。

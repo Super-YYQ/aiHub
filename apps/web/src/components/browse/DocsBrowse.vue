@@ -6,7 +6,7 @@ import { STATUSES } from '@aikit/shared';
 import { serializeEntry } from '@aikit/shared';
 import { useEntriesStore, useStacksStore, useDictionariesStore } from '../../stores/data';
 import { useUiStore } from '../../stores/ui';
-import { scopeEntries, statusName, relDate } from '../../lib/display';
+import { scopeEntries, statusName, relDate, sortPinnedFirst } from '../../lib/display';
 import SnippetBlock from '../../components/SnippetBlock.vue';
 import MarkdownIt from 'markdown-it';
 
@@ -42,9 +42,11 @@ const tree = computed(() =>
   dicts.types
     .map((t) => ({
       t,
-      items: entries.entries
-        .filter((e) => e.type === t.id && e.status !== 'archived')
-        .sort((a, b) => a.title.localeCompare(b.title, 'zh')),
+      items: sortPinnedFirst(
+        entries.entries
+          .filter((e) => e.type === t.id && e.status !== 'archived')
+          .sort((a, b) => a.title.localeCompare(b.title, 'zh')),
+      ),
     }))
     .filter((g) => g.items.length),
 );
