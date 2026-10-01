@@ -15,9 +15,7 @@ defineProps<{ entry: Entry; current?: boolean }>();
   >
     <span class="row-head">
       <span class="path" :data-type="entry.type">
-        <b>{{ entry.type }}</b
-        >/{{ entry.slug }}</span
-      >
+        <b>{{ entry.type }}</b>/{{ entry.slug }}</span>
       <span v-if="entry.pinned" class="pin" title="已置顶">置顶</span>
       <span class="st" :class="`st-${entry.status}`">{{ statusName(entry.status) }}</span>
     </span>

@@ -63,9 +63,14 @@ test('Service Worker 注册并预缓存，断网后仍能打开与搜索', async
   await expect(page.locator('.rail')).toBeVisible({ timeout: 10000 });
   // 命令面板搜索缓存数据（Dexie 提供）
   await page.keyboard.press('Control+k');
+  await page.waitForTimeout(500); // 等待 dialog 打开
   const input = page.getByPlaceholder('搜索名称、标签、命令或提示词内容');
+  await expect(input).toBeVisible({ timeout: 3000 });
   await input.fill('playwright');
-  await expect(page.getByRole('option').filter({ hasText: 'Playwright MCP' })).toBeVisible();
+  await page.waitForTimeout(400); // 等待搜索结果渲染
+  await expect(page.getByRole('option').filter({ hasText: 'Playwright MCP' })).toBeVisible({
+    timeout: 10000,
+  });
   await context.setOffline(false);
 });
 

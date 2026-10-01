@@ -185,8 +185,7 @@ const statusText = computed(() => {
           :aria-pressed="ui.layout === l.id"
           @click="ui.setLayout(l.id)"
         >
-          <strong>{{ l.name }}</strong
-          ><small>{{ l.note }}</small>
+          <strong>{{ l.name }}</strong><small>{{ l.note }}</small>
         </button>
       </div>
     </section>
@@ -202,8 +201,7 @@ const statusText = computed(() => {
           :aria-pressed="ui.style === s.id"
           @click="ui.setStyle(s.id)"
         >
-          <strong>{{ s.name }}</strong
-          ><small>{{ s.note }}</small>
+          <strong>{{ s.name }}</strong><small>{{ s.note }}</small>
         </button>
       </div>
       <div class="actions">
@@ -267,8 +265,8 @@ const statusText = computed(() => {
         </div>
         <p v-if="importPreview" class="hint">
           将导入 {{ importPreview.imported }} 条数据。<template v-if="importMode === 'replace'">
-            当前全部数据会被覆盖，建议先导出。</template
-          >
+            当前全部数据会被覆盖，建议先导出。
+</template>
         </p>
       </div>
     </section>

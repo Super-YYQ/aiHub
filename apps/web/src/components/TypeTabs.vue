@@ -17,8 +17,8 @@ const live = computed(() => entries.entries.filter((e) => e.status !== 'archived
 <template>
   <nav class="type-tabs" aria-label="按类型">
     <router-link to="/list/all" :aria-current="current === 'all' ? 'page' : undefined">
-      全部<span class="count">{{ live.length }}</span></router-link
-    >
+      全部<span class="count">{{ live.length }}</span>
+</router-link>
     <router-link
       v-for="t in dicts.types"
       :key="t.id"

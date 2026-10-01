@@ -6,6 +6,11 @@ import { useUiStore } from '../stores/ui';
 import { useDictionariesStore } from '../stores/data';
 import { STATUSES, STATUS_NAMES } from '@aikit/shared';
 
+defineEmits<{
+  'open-search': [];
+  'open-appearance': [];
+}>();
+
 const route = useRoute();
 const router = useRouter();
 const ui = useUiStore();

@@ -72,9 +72,7 @@ async function togglePin() {
     <div class="detail-top">
       <span class="type-badge" :data-type="entry.type">{{ dicts.typeName(entry.type) }}</span>
       <span class="path" :data-type="entry.type">
-        <b>{{ entry.type }}</b
-        >/{{ entry.slug }}</span
-      >
+        <b>{{ entry.type }}</b>/{{ entry.slug }}</span>
       <div class="detail-actions">
         <select
           class="btn btn-sm"
@@ -103,8 +101,7 @@ async function togglePin() {
       </router-link>
     </div>
     <p v-if="entry.status === 'inbox'" class="lede inbox-hint">
-      这条还在待整理：<router-link :to="`/edit/${entry.id}`">补全信息</router-link
-      >后，把状态改成“在用”或“想试”。
+      这条还在待整理：<router-link :to="`/edit/${entry.id}`">补全信息</router-link>后，把状态改成“在用”或“想试”。
     </p>
 
     <section v-if="entry.snippets.length">

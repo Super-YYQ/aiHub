@@ -428,8 +428,9 @@ function confirmLeave(): boolean {
           class="btn"
           :to="isEdit && editing ? `/list/all/${editing.id}` : '/'"
           @click="!confirmLeave() && $event.preventDefault()"
-          >取消</router-link
-        >
+          >
+取消
+</router-link>
         <button
           v-if="isEdit"
           class="btn btn-danger"

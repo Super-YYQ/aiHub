@@ -41,8 +41,7 @@ function onKey(ev: KeyboardEvent) {
             :aria-pressed="ui.layout === l.id"
             @click="ui.setLayout(l.id)"
           >
-            <strong>{{ l.name }}</strong
-            ><small>{{ l.note }}</small>
+            <strong>{{ l.name }}</strong><small>{{ l.note }}</small>
           </button>
         </div>
         <h2>配色方案</h2>
@@ -54,8 +53,7 @@ function onKey(ev: KeyboardEvent) {
             :aria-pressed="ui.style === s.id"
             @click="ui.setStyle(s.id)"
           >
-            <strong>{{ s.name }}</strong
-            ><small>{{ s.note }}</small>
+            <strong>{{ s.name }}</strong><small>{{ s.note }}</small>
           </button>
         </div>
         <h2>深浅色</h2>

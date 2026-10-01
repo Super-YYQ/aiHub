@@ -39,26 +39,29 @@ const statusText = computed(() => {
         to="/"
         :aria-current="route.name === 'home' ? 'page' : undefined"
       >
-        工作台</router-link
-      >
+        工作台
+</router-link>
       <router-link
         class="nav-item"
         to="/list/all"
         :aria-current="scope === 'all' ? 'page' : undefined"
-        >全部条目 <span class="count">{{ entries.live.length }}</span></router-link
-      >
+        >
+全部条目 <span class="count">{{ entries.live.length }}</span>
+</router-link>
       <router-link
         class="nav-item"
         to="/list/inbox"
         :aria-current="scope === 'inbox' ? 'page' : undefined"
-        >待整理 <span class="count">{{ entries.inbox.length }}</span></router-link
-      >
+        >
+待整理 <span class="count">{{ entries.inbox.length }}</span>
+</router-link>
       <router-link
         class="nav-item"
         to="/list/pinned"
         :aria-current="scope === 'pinned' ? 'page' : undefined"
-        >置顶 <span class="count">{{ entries.pinned.length }}</span></router-link
-      >
+        >
+置顶 <span class="count">{{ entries.pinned.length }}</span>
+</router-link>
     </div>
     <div class="nav-group">
       <h2>按类型</h2>
@@ -82,8 +85,9 @@ const statusText = computed(() => {
         class="nav-item"
         :to="`/stacks/${s.id}`"
         :aria-current="stackId === s.id ? 'page' : undefined"
-        >{{ s.name }}</router-link
-      >
+        >
+{{ s.name }}
+</router-link>
       <router-link class="nav-item" to="/stacks/new">＋ 新建环境</router-link>
       <router-link class="nav-item" to="/proposals">待确认</router-link>
       <router-link class="nav-item" to="/settings">数据与设置</router-link>

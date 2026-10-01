@@ -148,10 +148,7 @@ async function capture() {
     <article v-if="current" class="doc" :data-type="current.type">
       <div class="crumbs">
         <router-link :to="`/list/${current.type}`">{{ dicts.typeName(current.type) }}</router-link>
-        <span class="path" :data-type="current.type"
-          ><b>{{ current.type }}</b
-          >/{{ current.slug }}</span
-        >
+        <span class="path" :data-type="current.type"><b>{{ current.type }}</b>/{{ current.slug }}</span>
       </div>
       <h1>{{ current.title }}</h1>
       <p v-if="current.summary" class="lede">{{ current.summary }}</p>
@@ -246,8 +243,8 @@ async function capture() {
         <dd>
           <template v-if="current.stacks.length">
             <router-link v-for="r in current.stacks" :key="r.id" :to="`/stacks/${r.id}`">
-              {{ stacks.stacks.find((s) => s.id === r.id)?.name ?? r.id }} </router-link
-            >（之间用顿号分隔）
+              {{ stacks.stacks.find((s) => s.id === r.id)?.name ?? r.id }}
+</router-link>（之间用顿号分隔）
           </template>
           <template v-else>无</template>
         </dd>

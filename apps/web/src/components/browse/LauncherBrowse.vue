@@ -116,9 +116,9 @@ function onSearchKey(ev: KeyboardEvent) {
     </label>
     <div class="l-meta">
       <TypeTabs />
-      <router-link v-if="inboxCount" class="chip" to="/list/inbox"
-        >待整理 {{ inboxCount }}</router-link
-      >
+      <router-link v-if="inboxCount" class="chip" to="/list/inbox">
+待整理 {{ inboxCount }}
+</router-link>
     </div>
     <div class="l-body">
       <ul class="l-results" role="listbox" aria-label="搜索结果" data-testid="launcher-results">
@@ -135,10 +135,7 @@ function onSearchKey(ev: KeyboardEvent) {
             @click.prevent="sel = e.id"
           >
             <span class="row-head">
-              <span class="path" :data-type="e.type"
-                ><b>{{ e.type }}</b
-                >/{{ e.slug }}</span
-              >
+              <span class="path" :data-type="e.type"><b>{{ e.type }}</b>/{{ e.slug }}</span>
               <span class="st" :class="`st-${e.status}`">{{ statusName(e.status) }}</span>
             </span>
             <span class="l-title" v-html="highlighted(e.title)"></span>

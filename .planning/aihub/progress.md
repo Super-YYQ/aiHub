@@ -13,20 +13,20 @@
 | WP0    | ✅   | workspace/lint/typecheck/test/build 全绿；wrangler dev /api/health→{ok:true,db:true} |
 | WP1    | ✅   | shared 全量：schema(105 测试)/密钥扫描/搜索/变量/capture/markdown/清单/原型转换 全绿 |
 | WP2    | ✅   | 迁移+种子(21/3)+Drizzle 表+迁移测试 6/6；本地库实测 slug 唯一/重用/外键              |
-| WP3    | 🟡   | JWT 校验/角色/权限/本地开发身份                                                      |
+| WP3    | ✅   | JWT 校验/角色/权限/本地开发身份                                                      |
 | WP4    | ✅   | 全部接口实现+验收 15 测试：batch 行数/409/428/422/环境删除保留条目/修订恢复          |
-| WP5    | 🟡   | /api/sync、/api/capture（幂等）、/api/export、/api/import 三模式                     |
-| WP6    | 🟡   | Vue 骨架、Dexie、同步引擎（outbox/退避/锁/广播）                                     |
-| WP7    | 🟡   | 三栏工作台/条目页、共用编辑/环境/设置、命令面板、冲突对话框、三套配色令牌            |
-| WP7A-D | 🟡   | 卡片墙/搜索优先/看板/知识库                                                          |
-| WP8    | 🟡   | manifest、Service Worker、新版本提示、主题色跟随                                     |
-| WP9    | 🟡   | deploy.yml 可自动做；建库/域名/Access/Secrets 见 PENDING-MANUAL                      |
+| WP5    | ✅   | /api/sync、/api/capture（幂等）、/api/export、/api/import 三模式                     |
+| WP6    | ✅   | Vue 骨架、Dexie、同步引擎（outbox/退避/锁/广播）                                     |
+| WP7    | ✅   | 三栏工作台/条目页、共用编辑/环境/设置、命令面板、冲突对话框、三套配色令牌            |
+| WP7A-D | ✅   | 卡片墙/搜索优先/看板/知识库                                                          |
+| WP8    | ✅   | manifest、Service Worker、新版本提示、主题色跟随                                     |
+| WP9    | ✅   | deploy.yml 可自动做；建库/域名/Access/Secrets 见 PENDING-MANUAL                      |
 | WP10   | ✅   | check-export/to-markdown + backup.yml；5 测试全绿；凭据/实跑见 PENDING-MANUAL        |
 | WP11   | ✅   | 抽屉列出修订、选中对比（字段+笔记逐行）、恢复生成新版本且旧版本保留；E2E 全过        |
 | WP12   | ✅   | 类型/平台/标签管理已在 WP7 一并实现                                                  |
 | WP13   | ✅   | manifest share_target+分享参数预填面板（E2E 双视口）+ iOS 快捷指令文档               |
-| WP14   | 🟡   | 四种提案创建/接受/拒绝、过期冲突、批量                                               |
-| WP15   | ⬜   | MCP 端点 + 数据收集规则                                                              |
+| WP14   | ✅   | 四种提案创建/接受/拒绝、过期冲突、批量                                               |
+| WP15   | ✅   | MCP 端点 + 数据收集规则                                                              |
 
 ## 验证记录
 

@@ -40,9 +40,7 @@ const memberCount = (stackId: string) =>
       <router-link v-for="s in stacks.stacks" :key="s.id" class="row" :to="`/stacks/${s.id}`">
         <span class="row-title">{{ s.name }}</span>
         <span class="row-summary">
-          {{ meta(s.kind, s.os) }}，{{ memberCount(s.id) }} 个条目<template v-if="s.description"
-            >。{{ s.description }}</template
-          >
+          {{ meta(s.kind, s.os) }}，{{ memberCount(s.id) }} 个条目<template v-if="s.description">。{{ s.description }}</template>
         </span>
       </router-link>
       <div v-if="!stacks.stacks.length" class="panel-empty">
