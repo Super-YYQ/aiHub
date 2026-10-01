@@ -53,14 +53,48 @@ test('Service Worker 注册并预缓存，断网后仍能打开与搜索', async
   expect(cachedKeys).toContain('/');
 
   // SW 接管后重载一次：静态资源这次经 SW（进缓存），模拟第二次访问
-  await expect(page.locator('.nav-item').first()).toBeVisible({ timeout: 15000 });
+  // 桌面端等 .rail，移动端等 .tabbar
+  const navSelector = page.viewportSize()!.width > 860 ? '.rail' : '.tabbar';
+  await expect(page.locator(navSelector)).toBeVisible({ timeout: 15000 });
   await page.reload();
-  await expect(page.locator('.nav-item').first()).toBeVisible({ timeout: 15000 });
+  await expect(page.locator(navSelector)).toBeVisible({ timeout: 15000 });
+
+  // 等待数据同步到 Dexie（检查 IndexedDB 里有数据）
+  const hasData = await page.evaluate(async () => {
+    return new Promise<boolean>((resolve) => {
+      // 设置超时防止卡死
+      const timeout = setTimeout(() => resolve(false), 5000);
+      const req = indexedDB.open('aikit', 1);
+      req.onsuccess = () => {
+        clearTimeout(timeout);
+        const db = req.result;
+        try {
+          const tx = db.transaction('entries', 'readonly');
+          const store = tx.objectStore('entries');
+          const countReq = store.count();
+          countReq.onsuccess = () => {
+            resolve(countReq.result > 0);
+          };
+          countReq.onerror = () => resolve(false);
+        } catch {
+          resolve(false);
+        }
+      };
+      req.onerror = () => {
+        clearTimeout(timeout);
+        resolve(false);
+      };
+    });
+  });
+  if (!hasData) {
+    // 等待同步完成
+    await page.waitForTimeout(5000);
+  }
 
   // 断网：仍然能打开页面并搜索已缓存的条目
   await context.setOffline(true);
   await page.goto('/');
-  await expect(page.locator('.rail')).toBeVisible({ timeout: 10000 });
+  await expect(page.locator(navSelector)).toBeVisible({ timeout: 10000 });
   // 命令面板搜索缓存数据（Dexie 提供）
   await page.keyboard.press('Control+k');
   await page.waitForTimeout(500); // 等待 dialog 打开

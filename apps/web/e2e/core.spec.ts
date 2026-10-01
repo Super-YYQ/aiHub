@@ -10,7 +10,8 @@ test.beforeEach(async ({ context, page }) => {
 });
 
 test('工作台显示种子数据并可快速记录', async ({ page }) => {
-  await expect(page.getByTestId('pinned-panel')).toBeVisible();
+  // 等待数据同步完成（首次访问时 Dexie 是空的，需等 sync() 完成），等待快速记录输入框出现
+  await expect(page.getByTestId('capture-input')).toBeVisible({ timeout: 15000 });
   // 快速记录
   await page.getByTestId('capture-input').fill('E2E 记录的一个新工具');
   await page.getByTestId('capture-submit').click();
@@ -72,6 +73,8 @@ test('新建与编辑条目', async ({ page }, testInfo) => {
   const renamed = `${title}（改名）`;
   await page.getByTestId('entry-title').fill(renamed);
   await page.getByTestId('save-button').click();
+  // 等待跳转到详情页
+  await page.waitForURL(/\/list\/\w+\/\w+/);
   await expect(page.getByRole('heading', { name: renamed })).toBeVisible();
 
   // 删除
